@@ -158,7 +158,8 @@ class BoQController:
         index = self.main.window.tree_view.currentIndex()
         if not index.isValid():
             return None
-        return self.main.tree_model.get_node(index)
+        source_index = self.main._get_source_index(index)
+        return self.main.tree_model.get_node(source_index)
 
     def _get_parent_list(self, node: BoQTreeNode) -> Optional[list]:
         """Returns the list that contains node.data."""

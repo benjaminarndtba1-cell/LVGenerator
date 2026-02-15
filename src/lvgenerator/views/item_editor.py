@@ -18,7 +18,9 @@ from lvgenerator.commands.item_commands import (
     EditItemDescriptionCommand,
     EditItemPropertyCommand,
 )
+from lvgenerator.constants import GAEBPhase
 from lvgenerator.models.item import Item
+from lvgenerator.validators import ItemValidator
 
 
 class ItemEditorWidget(QWidget):
@@ -29,6 +31,8 @@ class ItemEditorWidget(QWidget):
         self._current_item: Optional[Item] = None
         self._updating = False
         self._undo_stack: Optional[QUndoStack] = None
+        self._phase: Optional[GAEBPhase] = None
+        self._validator = ItemValidator()
         self._setup_ui()
         self._connect_signals()
 
@@ -110,6 +114,9 @@ class ItemEditorWidget(QWidget):
             self.qty_tbd_check.setChecked(item.qty_tbd)
             self._update_total()
         self._updating = False
+
+    def set_phase(self, phase: GAEBPhase) -> None:
+        self._phase = phase
 
     def set_price_visible(self, visible: bool) -> None:
         self.up_edit.setVisible(visible)
@@ -203,7 +210,30 @@ class ItemEditorWidget(QWidget):
             self._push_item_command("up", item.up, new_up)
 
         self._update_total()
+        self._validate()
         self.item_changed.emit()
+
+    def _validate(self) -> None:
+        if self._current_item is None or self._phase is None:
+            return
+        result = self._validator.validate(self._current_item, self._phase)
+        field_map = {
+            "rno_part": self.rno_edit,
+            "qty": self.qty_edit,
+            "qu": self.qu_edit,
+            "up": self.up_edit,
+        }
+        for field_name, widget in field_map.items():
+            errors = result.get_field_errors(field_name)
+            if not errors:
+                widget.setStyleSheet("")
+                widget.setToolTip("")
+            elif errors[0].severity == "error":
+                widget.setStyleSheet("border: 2px solid red;")
+                widget.setToolTip(errors[0].message)
+            else:
+                widget.setStyleSheet("border: 2px solid orange;")
+                widget.setToolTip(errors[0].message)
 
     def _update_total(self) -> None:
         if self._current_item:

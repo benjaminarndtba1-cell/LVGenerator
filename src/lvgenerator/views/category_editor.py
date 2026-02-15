@@ -13,6 +13,7 @@ from PySide6.QtWidgets import (
 
 from lvgenerator.commands.category_commands import EditCategoryPropertyCommand
 from lvgenerator.models.category import BoQCategory
+from lvgenerator.validators import CategoryValidator
 
 
 class CategoryEditorWidget(QWidget):
@@ -23,6 +24,7 @@ class CategoryEditorWidget(QWidget):
         self._current_category: Optional[BoQCategory] = None
         self._updating = False
         self._undo_stack: Optional[QUndoStack] = None
+        self._validator = CategoryValidator()
         self._setup_ui()
         self._connect_signals()
 
@@ -93,4 +95,22 @@ class CategoryEditorWidget(QWidget):
         if new_label != cat.label:
             self._push_command("label", cat.label, new_label)
 
+        self._validate()
         self.category_changed.emit()
+
+    def _validate(self) -> None:
+        if self._current_category is None:
+            return
+        result = self._validator.validate(self._current_category)
+        field_map = {"rno_part": self.rno_edit, "label": self.label_edit}
+        for field_name, widget in field_map.items():
+            errors = result.get_field_errors(field_name)
+            if not errors:
+                widget.setStyleSheet("")
+                widget.setToolTip("")
+            elif errors[0].severity == "error":
+                widget.setStyleSheet("border: 2px solid red;")
+                widget.setToolTip(errors[0].message)
+            else:
+                widget.setStyleSheet("border: 2px solid orange;")
+                widget.setToolTip(errors[0].message)
