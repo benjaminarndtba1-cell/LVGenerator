@@ -1,0 +1,139 @@
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QAction, QKeySequence
+from PySide6.QtWidgets import (
+    QMainWindow,
+    QSplitter,
+    QStackedWidget,
+    QStatusBar,
+    QToolBar,
+    QTreeView,
+    QWidget,
+    QVBoxLayout,
+    QLabel,
+)
+
+from lvgenerator.views.category_editor import CategoryEditorWidget
+from lvgenerator.views.item_editor import ItemEditorWidget
+
+
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("LVGenerator")
+        self.setMinimumSize(1200, 800)
+
+        self._setup_actions()
+        self._setup_menu_bar()
+        self._setup_toolbar()
+        self._setup_central_widget()
+        self._setup_status_bar()
+
+    def _setup_actions(self) -> None:
+        self.action_new = QAction("&Neu", self)
+        self.action_new.setShortcut(QKeySequence.New)
+
+        self.action_open = QAction("&Oeffnen...", self)
+        self.action_open.setShortcut(QKeySequence.Open)
+
+        self.action_save = QAction("&Speichern", self)
+        self.action_save.setShortcut(QKeySequence.Save)
+
+        self.action_save_as = QAction("Speichern &unter...", self)
+        self.action_save_as.setShortcut(QKeySequence("Ctrl+Shift+S"))
+
+        self.action_exit = QAction("&Beenden", self)
+        self.action_exit.setShortcut(QKeySequence.Quit)
+        self.action_exit.triggered.connect(self.close)
+
+        self.action_add_category = QAction("Kategorie hinzufuegen", self)
+        self.action_add_item = QAction("Position hinzufuegen", self)
+        self.action_delete = QAction("Loeschen", self)
+        self.action_delete.setShortcut(QKeySequence.Delete)
+
+        self.action_about = QAction("Ueber LVGenerator", self)
+
+    def _setup_menu_bar(self) -> None:
+        menu_bar = self.menuBar()
+
+        file_menu = menu_bar.addMenu("&Datei")
+        file_menu.addAction(self.action_new)
+        file_menu.addAction(self.action_open)
+        file_menu.addSeparator()
+        file_menu.addAction(self.action_save)
+        file_menu.addAction(self.action_save_as)
+        file_menu.addSeparator()
+        file_menu.addAction(self.action_exit)
+
+        edit_menu = menu_bar.addMenu("&Bearbeiten")
+        edit_menu.addAction(self.action_add_category)
+        edit_menu.addAction(self.action_add_item)
+        edit_menu.addSeparator()
+        edit_menu.addAction(self.action_delete)
+
+        help_menu = menu_bar.addMenu("&Hilfe")
+        help_menu.addAction(self.action_about)
+
+    def _setup_toolbar(self) -> None:
+        toolbar = QToolBar("Hauptwerkzeugleiste")
+        toolbar.setMovable(False)
+        self.addToolBar(toolbar)
+
+        toolbar.addAction(self.action_new)
+        toolbar.addAction(self.action_open)
+        toolbar.addAction(self.action_save)
+        toolbar.addSeparator()
+        toolbar.addAction(self.action_add_category)
+        toolbar.addAction(self.action_add_item)
+        toolbar.addAction(self.action_delete)
+
+    def _setup_central_widget(self) -> None:
+        splitter = QSplitter()
+
+        # Left: Tree view
+        self.tree_view = QTreeView()
+        self.tree_view.setAlternatingRowColors(True)
+        self.tree_view.setSelectionBehavior(QTreeView.SelectRows)
+        self.tree_view.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.tree_view.setHeaderHidden(False)
+        self.tree_view.setExpandsOnDoubleClick(True)
+
+        # Right: Editor panel (stacked widget to switch between editors)
+        self.editor_stack = QStackedWidget()
+
+        # Empty placeholder
+        empty_widget = QWidget()
+        empty_layout = QVBoxLayout(empty_widget)
+        empty_label = QLabel("Waehlen Sie ein Element im Baum aus.")
+        empty_label.setAlignment(Qt.AlignCenter)
+        empty_layout.addWidget(empty_label)
+
+        self.item_editor = ItemEditorWidget()
+        self.category_editor = CategoryEditorWidget()
+
+        self.editor_stack.addWidget(empty_widget)       # index 0
+        self.editor_stack.addWidget(self.item_editor)    # index 1
+        self.editor_stack.addWidget(self.category_editor)  # index 2
+
+        splitter.addWidget(self.tree_view)
+        splitter.addWidget(self.editor_stack)
+        splitter.setSizes([650, 450])
+
+        self.setCentralWidget(splitter)
+
+    def _setup_status_bar(self) -> None:
+        self.status_bar = QStatusBar()
+        self.setStatusBar(self.status_bar)
+        self.phase_label = QLabel("")
+        self.status_bar.addPermanentWidget(self.phase_label)
+
+    def show_item_editor(self) -> None:
+        self.editor_stack.setCurrentIndex(1)
+
+    def show_category_editor(self) -> None:
+        self.editor_stack.setCurrentIndex(2)
+
+    def show_empty_editor(self) -> None:
+        self.editor_stack.setCurrentIndex(0)
+
+    def set_phase_label(self, text: str) -> None:
+        self.phase_label.setText(text)

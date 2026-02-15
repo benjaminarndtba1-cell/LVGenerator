@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GAEB xmlns="http://www.gaeb.de/GAEB_DA_XML/DA83/3.2">
+  <GAEBInfo>
+    <Version>3.2</Version>
+    <VersDate>2013-10</VersDate>
+    <Date>2024-06-15</Date>
+    <ProgSystem>LVGenerator</ProgSystem>
+    <ProgName>LVGenerator Test</ProgName>
+  </GAEBInfo>
+  <PrjInfo>
+    <NamePrj>Testprojekt Neubau</NamePrj>
+    <LblPrj>TP-2024</LblPrj>
+    <Cur>EUR</Cur>
+    <CurLbl>Euro</CurLbl>
+  </PrjInfo>
+  <Award>
+    <DP>83</DP>
+    <AwardInfo>
+      <BoQID>a1b2c3d4-e5f6-7890-abcd-ef1234567890</BoQID>
+      <Cur>EUR</Cur>
+      <CurLbl>Euro</CurLbl>
+    </AwardInfo>
+    <BoQ ID="boq-001">
+      <BoQInfo>
+        <Name>Neubau Buerogebaeude</Name>
+        <Date>2024-06-15</Date>
+        <OutlCompl>AllTxt</OutlCompl>
+        <BoQBkdn>
+          <Type>BoQLevel</Type>
+          <Length>2</Length>
+          <Num>Yes</Num>
+        </BoQBkdn>
+        <BoQBkdn>
+          <Type>Item</Type>
+          <Length>4</Length>
+          <Num>Yes</Num>
+        </BoQBkdn>
+      </BoQInfo>
+      <BoQBody>
+        <BoQCtgy ID="cat-01" RNoPart="01">
+          <LblTx><p><span>Rohbauarbeiten</span></p></LblTx>
+          <BoQBody>
+            <BoQCtgy ID="cat-01-01" RNoPart="01">
+              <LblTx><p><span>Erdarbeiten</span></p></LblTx>
+              <BoQBody>
+                <Itemlist>
+                  <Item ID="item-001" RNoPart="0010">
+                    <Qty>150.000</Qty>
+                    <QU>m3</QU>
+                    <Description>
+                      <CompleteText>
+                        <DetailTxt>
+                          <Text>
+                            <p><span>Boden loesen und seitlich lagern. Bodenklasse 3-5. Einschl. aller erforderlichen Nebenarbeiten.</span></p>
+                          </Text>
+                        </DetailTxt>
+                        <OutlineText>
+                          <OutlTxt>
+                            <TextOutlTxt>
+                              <p><span>Boden loesen und lagern</span></p>
+                            </TextOutlTxt>
+                          </OutlTxt>
+                        </OutlineText>
+                      </CompleteText>
+                    </Description>
+                  </Item>
+                  <Item ID="item-002" RNoPart="0020">
+                    <Qty>80.000</Qty>
+                    <QU>m3</QU>
+                    <Description>
+                      <CompleteText>
+                        <DetailTxt>
+                          <Text>
+                            <p><span>Bodenaushub abfahren. Entfernung bis 10 km. Einschl. Deponiegebuehren.</span></p>
+                          </Text>
+                        </DetailTxt>
+                        <OutlineText>
+                          <OutlTxt>
+                            <TextOutlTxt>
+                              <p><span>Bodenaushub abfahren</span></p>
+                            </TextOutlTxt>
+                          </OutlTxt>
+                        </OutlineText>
+                      </CompleteText>
+                    </Description>
+                  </Item>
+                </Itemlist>
+              </BoQBody>
+            </BoQCtgy>
+            <BoQCtgy ID="cat-01-02" RNoPart="02">
+              <LblTx><p><span>Betonarbeiten</span></p></LblTx>
+              <BoQBody>
+                <Itemlist>
+                  <Item ID="item-003" RNoPart="0010">
+                    <Qty>25.000</Qty>
+                    <QU>m3</QU>
+                    <Description>
+                      <CompleteText>
+                        <DetailTxt>
+                          <Text>
+                            <p><span>Stahlbeton C25/30 fuer Fundamente liefern und einbauen.</span></p>
+                          </Text>
+                        </DetailTxt>
+                        <OutlineText>
+                          <OutlTxt>
+                            <TextOutlTxt>
+                              <p><span>Stahlbeton Fundamente</span></p>
+                            </TextOutlTxt>
+                          </OutlTxt>
+                        </OutlineText>
+                      </CompleteText>
+                    </Description>
+                  </Item>
+                </Itemlist>
+              </BoQBody>
+            </BoQCtgy>
+          </BoQBody>
+        </BoQCtgy>
+        <BoQCtgy ID="cat-02" RNoPart="02">
+          <LblTx><p><span>Dacharbeiten</span></p></LblTx>
+          <BoQBody>
+            <Itemlist>
+              <Item ID="item-004" RNoPart="0010">
+                <Qty>200.000</Qty>
+                <QU>m2</QU>
+                <Description>
+                  <CompleteText>
+                    <DetailTxt>
+                      <Text>
+                        <p><span>Flachdachabdichtung zweilagig mit Bitumenbahnen.</span></p>
+                      </Text>
+                    </DetailTxt>
+                    <OutlineText>
+                      <OutlTxt>
+                        <TextOutlTxt>
+                          <p><span>Flachdachabdichtung</span></p>
+                        </TextOutlTxt>
+                      </OutlTxt>
+                    </OutlineText>
+                  </CompleteText>
+                </Description>
+              </Item>
+            </Itemlist>
+          </BoQBody>
+        </BoQCtgy>
+      </BoQBody>
+    </BoQ>
+  </Award>
+</GAEB>
