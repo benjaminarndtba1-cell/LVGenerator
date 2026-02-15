@@ -82,6 +82,9 @@ class BoQTreeModel(QAbstractItemModel):
                 return cat.rno_part
             if col == 1:
                 return cat.label
+            if col == 5:
+                total = cat.calculate_total()
+                return str(total) if total is not None else ""
             return None
 
         if node.node_type == "item":

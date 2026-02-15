@@ -2,6 +2,7 @@ from decimal import Decimal, InvalidOperation
 from typing import Optional
 
 from PySide6.QtCore import Signal
+from PySide6.QtGui import QUndoStack
 from PySide6.QtWidgets import (
     QCheckBox,
     QFormLayout,
@@ -13,6 +14,10 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from lvgenerator.commands.item_commands import (
+    EditItemDescriptionCommand,
+    EditItemPropertyCommand,
+)
 from lvgenerator.models.item import Item
 
 
@@ -23,8 +28,12 @@ class ItemEditorWidget(QWidget):
         super().__init__(parent)
         self._current_item: Optional[Item] = None
         self._updating = False
+        self._undo_stack: Optional[QUndoStack] = None
         self._setup_ui()
         self._connect_signals()
+
+    def set_undo_stack(self, stack: QUndoStack) -> None:
+        self._undo_stack = stack
 
     def _setup_ui(self) -> None:
         layout = QVBoxLayout(self)
@@ -125,25 +134,73 @@ class ItemEditorWidget(QWidget):
         self.total_label.setText("--")
         self.qty_tbd_check.setChecked(False)
 
+    def _push_item_command(self, prop: str, old_val, new_val) -> None:
+        if self._undo_stack is None:
+            setattr(self._current_item, prop, new_val)
+        else:
+            cmd = EditItemPropertyCommand(
+                self._current_item, prop, old_val, new_val
+            )
+            self._updating = True
+            self._undo_stack.push(cmd)
+            self._updating = False
+
+    def _push_desc_command(self, field: str, old_val: str, new_val: str) -> None:
+        if self._undo_stack is None:
+            setattr(self._current_item.description, field, new_val)
+        else:
+            cmd = EditItemDescriptionCommand(
+                self._current_item.description, field, old_val, new_val
+            )
+            self._updating = True
+            self._undo_stack.push(cmd)
+            self._updating = False
+
     def _on_field_changed(self) -> None:
         if self._updating or self._current_item is None:
             return
         item = self._current_item
-        item.rno_part = self.rno_edit.text()
-        item.description.outline_text = self.outline_edit.toPlainText()
-        item.description.detail_text = self.detail_edit.toPlainText()
-        item.qu = self.qu_edit.text()
-        item.qty_tbd = self.qty_tbd_check.isChecked()
+
+        # String properties
+        new_rno = self.rno_edit.text()
+        if new_rno != item.rno_part:
+            self._push_item_command("rno_part", item.rno_part, new_rno)
+
+        new_qu = self.qu_edit.text()
+        if new_qu != item.qu:
+            self._push_item_command("qu", item.qu, new_qu)
+
+        new_qty_tbd = self.qty_tbd_check.isChecked()
+        if new_qty_tbd != item.qty_tbd:
+            self._push_item_command("qty_tbd", item.qty_tbd, new_qty_tbd)
+
+        # Description fields
+        new_outline = self.outline_edit.toPlainText()
+        if new_outline != item.description.outline_text:
+            self._push_desc_command(
+                "outline_text", item.description.outline_text, new_outline
+            )
+
+        new_detail = self.detail_edit.toPlainText()
+        if new_detail != item.description.detail_text:
+            self._push_desc_command(
+                "detail_text", item.description.detail_text, new_detail
+            )
+
+        # Decimal properties
+        try:
+            new_qty = Decimal(self.qty_edit.text()) if self.qty_edit.text() else None
+        except InvalidOperation:
+            new_qty = None
+        if new_qty != item.qty:
+            self._push_item_command("qty", item.qty, new_qty)
 
         try:
-            item.qty = Decimal(self.qty_edit.text()) if self.qty_edit.text() else None
+            new_up = Decimal(self.up_edit.text()) if self.up_edit.text() else None
         except InvalidOperation:
-            item.qty = None
-
-        try:
-            item.up = Decimal(self.up_edit.text()) if self.up_edit.text() else None
-        except InvalidOperation:
-            item.up = None
+            new_up = None
+        if new_up != item.up:
+            self._push_item_command("up", item.up, new_up)
 
         self._update_total()
         self.item_changed.emit()

@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING
+from decimal import Decimal
+from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
     from lvgenerator.models.item import Item
@@ -20,3 +21,19 @@ class BoQCategory:
         if parent_ordinal:
             return f"{parent_ordinal}.{self.rno_part}"
         return self.rno_part
+
+    def calculate_total(self) -> Optional[Decimal]:
+        """Sum of all item totals in this category (recursive)."""
+        total = Decimal("0.00")
+        has_any = False
+        for item in self.items:
+            item_total = item.it if item.it is not None else item.calculate_total()
+            if item_total is not None:
+                total += item_total
+                has_any = True
+        for sub in self.subcategories:
+            sub_total = sub.calculate_total()
+            if sub_total is not None:
+                total += sub_total
+                has_any = True
+        return total if has_any else None

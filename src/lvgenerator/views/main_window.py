@@ -1,5 +1,5 @@
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QAction, QKeySequence
+from PySide6.QtGui import QAction, QKeySequence, QUndoStack
 from PySide6.QtWidgets import (
     QMainWindow,
     QSplitter,
@@ -45,10 +45,29 @@ class MainWindow(QMainWindow):
         self.action_exit.setShortcut(QKeySequence.Quit)
         self.action_exit.triggered.connect(self.close)
 
+        self.action_undo = QAction("Rueckgaengig", self)
+        self.action_undo.setShortcut(QKeySequence.Undo)
+        self.action_undo.setEnabled(False)
+
+        self.action_redo = QAction("Wiederholen", self)
+        self.action_redo.setShortcut(QKeySequence.Redo)
+        self.action_redo.setEnabled(False)
+
         self.action_add_category = QAction("Kategorie hinzufuegen", self)
         self.action_add_item = QAction("Position hinzufuegen", self)
         self.action_delete = QAction("Loeschen", self)
         self.action_delete.setShortcut(QKeySequence.Delete)
+
+        self.action_move_up = QAction("Nach oben", self)
+        self.action_move_up.setShortcut(QKeySequence("Alt+Up"))
+
+        self.action_move_down = QAction("Nach unten", self)
+        self.action_move_down.setShortcut(QKeySequence("Alt+Down"))
+
+        self.action_duplicate = QAction("Duplizieren", self)
+        self.action_duplicate.setShortcut(QKeySequence("Ctrl+D"))
+
+        self.action_convert_phase = QAction("Phase konvertieren...", self)
 
         self.action_about = QAction("Ueber LVGenerator", self)
 
@@ -65,10 +84,19 @@ class MainWindow(QMainWindow):
         file_menu.addAction(self.action_exit)
 
         edit_menu = menu_bar.addMenu("&Bearbeiten")
+        edit_menu.addAction(self.action_undo)
+        edit_menu.addAction(self.action_redo)
+        edit_menu.addSeparator()
         edit_menu.addAction(self.action_add_category)
         edit_menu.addAction(self.action_add_item)
         edit_menu.addSeparator()
         edit_menu.addAction(self.action_delete)
+        edit_menu.addSeparator()
+        edit_menu.addAction(self.action_move_up)
+        edit_menu.addAction(self.action_move_down)
+        edit_menu.addAction(self.action_duplicate)
+        edit_menu.addSeparator()
+        edit_menu.addAction(self.action_convert_phase)
 
         help_menu = menu_bar.addMenu("&Hilfe")
         help_menu.addAction(self.action_about)
@@ -82,9 +110,16 @@ class MainWindow(QMainWindow):
         toolbar.addAction(self.action_open)
         toolbar.addAction(self.action_save)
         toolbar.addSeparator()
+        toolbar.addAction(self.action_undo)
+        toolbar.addAction(self.action_redo)
+        toolbar.addSeparator()
         toolbar.addAction(self.action_add_category)
         toolbar.addAction(self.action_add_item)
         toolbar.addAction(self.action_delete)
+        toolbar.addSeparator()
+        toolbar.addAction(self.action_move_up)
+        toolbar.addAction(self.action_move_down)
+        toolbar.addAction(self.action_duplicate)
 
     def _setup_central_widget(self) -> None:
         splitter = QSplitter()
