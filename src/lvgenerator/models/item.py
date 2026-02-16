@@ -27,8 +27,19 @@ class Item:
     not_offered: bool = False
     hour_it: bool = False
     description: ItemDescription = field(default_factory=ItemDescription)
+    formula: str = ""
+    use_calculated_qty: bool = False
 
     def calculate_total(self) -> Optional[Decimal]:
-        if self.qty is not None and self.up is not None:
-            return (self.qty * self.up).quantize(Decimal("0.01"))
+        effective_qty = self.get_effective_qty()
+        if effective_qty is not None and self.up is not None:
+            return (effective_qty * self.up).quantize(Decimal("0.01"))
         return None
+
+    def get_effective_qty(self) -> Optional[Decimal]:
+        """Get the effective quantity: calculated if use_calculated_qty is True, else manual qty."""
+        if self.use_calculated_qty:
+            from lvgenerator.models.formula_evaluator import evaluate_formula
+            result, _error = evaluate_formula(self.formula)
+            return result
+        return self.qty

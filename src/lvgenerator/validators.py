@@ -5,6 +5,7 @@ from typing import Optional
 from lvgenerator.constants import GAEBPhase
 from lvgenerator.gaeb.phase_rules import get_rules
 from lvgenerator.models.category import BoQCategory
+from lvgenerator.models.formula_evaluator import evaluate_formula
 from lvgenerator.models.item import Item
 from lvgenerator.models.project import GAEBProject
 
@@ -66,6 +67,20 @@ class ItemValidator:
             errors.append(ValidationError(
                 "up", "Einheitspreis darf nicht negativ sein"
             ))
+
+        # Formula validation
+        if item.use_calculated_qty:
+            if not item.formula.strip():
+                errors.append(ValidationError(
+                    "formula", "Formelberechnung aktiv, aber keine Formel eingegeben",
+                    "warning"
+                ))
+            else:
+                _result, error = evaluate_formula(item.formula)
+                if error:
+                    errors.append(ValidationError(
+                        "formula", f"Ungueltige Formel: {error}"
+                    ))
 
         return ValidationResult(errors)
 

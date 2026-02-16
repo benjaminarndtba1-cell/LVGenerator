@@ -79,6 +79,8 @@ class MainWindow(QMainWindow):
 
         self.action_about = QAction("Ueber LVGenerator", self)
 
+        self.action_global_constants = QAction("Globale Konstanten...", self)
+
     def _setup_menu_bar(self) -> None:
         menu_bar = self.menuBar()
 
@@ -110,6 +112,9 @@ class MainWindow(QMainWindow):
         edit_menu.addSeparator()
         edit_menu.addAction(self.action_convert_phase)
         edit_menu.addAction(self.action_project_info)
+
+        extras_menu = menu_bar.addMenu("E&xtras")
+        extras_menu.addAction(self.action_global_constants)
 
         help_menu = menu_bar.addMenu("&Hilfe")
         help_menu.addAction(self.action_about)

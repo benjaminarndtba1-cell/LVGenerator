@@ -174,8 +174,9 @@ class GAEBWriter:
         if item.rno_part:
             item_elem.set("RNoPart", item.rno_part)
 
-        if rules.has_quantities and item.qty is not None:
-            self._sub(item_elem, "Qty", ns, str(item.qty))
+        effective_qty = item.get_effective_qty()
+        if rules.has_quantities and effective_qty is not None:
+            self._sub(item_elem, "Qty", ns, str(effective_qty))
         if item.qty_tbd:
             self._sub(item_elem, "QtyTBD", ns, "Yes")
         if item.qu:

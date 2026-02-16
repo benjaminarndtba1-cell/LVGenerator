@@ -7,6 +7,7 @@ from PySide6.QtWidgets import (
     QCheckBox,
     QFormLayout,
     QGroupBox,
+    QHBoxLayout,
     QLabel,
     QLineEdit,
     QPlainTextEdit,
@@ -19,6 +20,7 @@ from lvgenerator.commands.item_commands import (
     EditItemPropertyCommand,
 )
 from lvgenerator.constants import GAEBPhase
+from lvgenerator.models.formula_evaluator import evaluate_formula
 from lvgenerator.models.item import Item
 from lvgenerator.validators import ItemValidator
 
@@ -62,13 +64,33 @@ class ItemEditorWidget(QWidget):
 
         layout.addWidget(pos_group)
 
-        # Quantities
+        # Quantities & formula
         qty_group = QGroupBox("Mengen & Preise")
         qty_layout = QFormLayout(qty_group)
 
         self.qty_edit = QLineEdit()
         self.qty_edit.setPlaceholderText("0.000")
         qty_layout.addRow("Menge:", self.qty_edit)
+
+        # Formula row with result preview
+        formula_container = QWidget()
+        formula_h_layout = QHBoxLayout(formula_container)
+        formula_h_layout.setContentsMargins(0, 0, 0, 0)
+
+        self.formula_edit = QLineEdit()
+        self.formula_edit.setPlaceholderText(
+            "z.B. 2 * PI * 5 + AUFRUNDEN(3.14, 1)"
+        )
+        formula_h_layout.addWidget(self.formula_edit, stretch=3)
+
+        self.formula_result_label = QLabel("")
+        self.formula_result_label.setMinimumWidth(120)
+        formula_h_layout.addWidget(self.formula_result_label, stretch=1)
+
+        qty_layout.addRow("Formel:", formula_container)
+
+        self.use_calculated_check = QCheckBox("Menge aus Formel berechnen")
+        qty_layout.addRow("", self.use_calculated_check)
 
         self.qu_edit = QLineEdit()
         self.qu_edit.setPlaceholderText("z.B. m2, Stk, psch")
@@ -96,6 +118,8 @@ class ItemEditorWidget(QWidget):
         self.qu_edit.textChanged.connect(self._on_field_changed)
         self.up_edit.textChanged.connect(self._on_field_changed)
         self.qty_tbd_check.toggled.connect(self._on_field_changed)
+        self.formula_edit.textChanged.connect(self._on_formula_changed)
+        self.use_calculated_check.toggled.connect(self._on_calculation_mode_changed)
 
     def set_item(self, item: Optional[Item]) -> None:
         self._updating = True
@@ -112,6 +136,10 @@ class ItemEditorWidget(QWidget):
             self.qu_edit.setText(item.qu)
             self.up_edit.setText(str(item.up) if item.up is not None else "")
             self.qty_tbd_check.setChecked(item.qty_tbd)
+            self.formula_edit.setText(item.formula)
+            self.use_calculated_check.setChecked(item.use_calculated_qty)
+            self._update_calculation_mode()
+            self._update_formula_result()
             self._update_total()
         self._updating = False
 
@@ -131,6 +159,11 @@ class ItemEditorWidget(QWidget):
                     if label and label.widget():
                         label.widget().setVisible(visible)
 
+    def refresh_formula(self) -> None:
+        """Refresh formula result, e.g. after global constants changed."""
+        self._update_formula_result()
+        self._update_total()
+
     def _clear_fields(self) -> None:
         self.rno_edit.clear()
         self.outline_edit.clear()
@@ -140,6 +173,11 @@ class ItemEditorWidget(QWidget):
         self.up_edit.clear()
         self.total_label.setText("--")
         self.qty_tbd_check.setChecked(False)
+        self.formula_edit.clear()
+        self.use_calculated_check.setChecked(False)
+        self.formula_result_label.setText("")
+        self.formula_result_label.setStyleSheet("")
+        self._update_calculation_mode()
 
     def _push_item_command(self, prop: str, old_val, new_val) -> None:
         if self._undo_stack is None:
@@ -213,6 +251,54 @@ class ItemEditorWidget(QWidget):
         self._validate()
         self.item_changed.emit()
 
+    def _on_formula_changed(self) -> None:
+        """Handle formula text changes: update model and result preview."""
+        if self._updating or self._current_item is None:
+            return
+
+        new_formula = self.formula_edit.text()
+        if new_formula != self._current_item.formula:
+            self._push_item_command("formula", self._current_item.formula, new_formula)
+
+        self._update_formula_result()
+        self._update_total()
+        self._validate()
+        self.item_changed.emit()
+
+    def _update_formula_result(self) -> None:
+        """Evaluate the current formula and show result/error."""
+        formula_text = self.formula_edit.text().strip()
+        if not formula_text:
+            self.formula_result_label.setText("")
+            self.formula_result_label.setStyleSheet("")
+            self.formula_result_label.setToolTip("")
+            self.formula_edit.setStyleSheet("")
+            return
+
+        result, error = evaluate_formula(formula_text)
+        if error:
+            self.formula_result_label.setText("Fehler")
+            self.formula_result_label.setStyleSheet("color: red; font-weight: bold;")
+            self.formula_result_label.setToolTip(error)
+            self.formula_edit.setStyleSheet("border: 2px solid red;")
+        elif result is not None:
+            display = str(result.quantize(Decimal("0.001")))
+            self.formula_result_label.setText(f"= {display}")
+            self.formula_result_label.setStyleSheet("color: green; font-weight: bold;")
+            self.formula_result_label.setToolTip("Berechnetes Ergebnis")
+            self.formula_edit.setStyleSheet("border: 2px solid green;")
+
+            # If formula mode active, update the qty display
+            if self.use_calculated_check.isChecked():
+                self._updating = True
+                self.qty_edit.setText(display)
+                self._updating = False
+        else:
+            self.formula_result_label.setText("")
+            self.formula_result_label.setStyleSheet("")
+            self.formula_result_label.setToolTip("")
+            self.formula_edit.setStyleSheet("")
+
     def _validate(self) -> None:
         if self._current_item is None or self._phase is None:
             return
@@ -235,9 +321,53 @@ class ItemEditorWidget(QWidget):
                 widget.setStyleSheet("border: 2px solid orange;")
                 widget.setToolTip(errors[0].message)
 
+        # Formula field validation
+        formula_errors = result.get_field_errors("formula")
+        if formula_errors:
+            err = formula_errors[0]
+            if err.severity == "error":
+                self.formula_edit.setStyleSheet("border: 2px solid red;")
+            else:
+                self.formula_edit.setStyleSheet("border: 2px solid orange;")
+            self.formula_edit.setToolTip(err.message)
+
     def _update_total(self) -> None:
         if self._current_item:
-            total = self._current_item.calculate_total()
-            self.total_label.setText(str(total) if total is not None else "--")
+            effective_qty = self._current_item.get_effective_qty()
+            if effective_qty is not None and self._current_item.up is not None:
+                total = (effective_qty * self._current_item.up).quantize(Decimal("0.01"))
+                self.total_label.setText(str(total))
+            else:
+                self.total_label.setText("--")
         else:
             self.total_label.setText("--")
+
+    def _update_calculation_mode(self) -> None:
+        """Update UI based on calculation mode."""
+        use_calculated = self.use_calculated_check.isChecked()
+        self.qty_edit.setReadOnly(use_calculated)
+        self.formula_edit.setEnabled(True)
+
+        if use_calculated:
+            self.qty_edit.setStyleSheet("background-color: #f0f0f0;")
+            self._update_formula_result()
+        else:
+            self.qty_edit.setStyleSheet("")
+
+    def _on_calculation_mode_changed(self) -> None:
+        """Handle change in calculation mode."""
+        if self._updating or self._current_item is None:
+            return
+
+        new_use_calculated = self.use_calculated_check.isChecked()
+        if new_use_calculated != self._current_item.use_calculated_qty:
+            self._push_item_command(
+                "use_calculated_qty",
+                self._current_item.use_calculated_qty,
+                new_use_calculated,
+            )
+
+        self._update_calculation_mode()
+        self._update_total()
+        self._validate()
+        self.item_changed.emit()

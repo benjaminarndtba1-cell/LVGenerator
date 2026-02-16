@@ -18,6 +18,7 @@ from lvgenerator.models.project import GAEBProject
 from lvgenerator.viewmodels.boq_tree_model import (
     BoQFilterProxyModel, BoQTreeModel, BoQTreeNode,
 )
+from lvgenerator.views.global_constants_dialog import GlobalConstantsDialog
 from lvgenerator.views.main_window import MainWindow
 from lvgenerator.views.phase_convert_dialog import PhaseConvertDialog
 
@@ -72,6 +73,11 @@ class MainController:
         self.window.action_duplicate.triggered.connect(self.boq_ctrl.duplicate_selected)
         self.window.action_convert_phase.triggered.connect(self._on_convert_phase)
         self.window.action_project_info.triggered.connect(self._on_show_project_info)
+
+        # Extras
+        self.window.action_global_constants.triggered.connect(
+            self._on_global_constants
+        )
 
         # About
         self.window.action_about.triggered.connect(self._show_about)
@@ -374,6 +380,12 @@ class MainController:
             cats += sub_cats
             items += sub_items
         return cats, items
+
+    def _on_global_constants(self) -> None:
+        dialog = GlobalConstantsDialog(self.window)
+        if dialog.exec() == GlobalConstantsDialog.DialogCode.Accepted:
+            # Refresh formula results in the item editor
+            self.window.item_editor.refresh_formula()
 
     def _show_about(self) -> None:
         QMessageBox.about(

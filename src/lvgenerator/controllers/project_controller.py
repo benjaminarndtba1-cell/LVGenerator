@@ -6,6 +6,7 @@ from PySide6.QtWidgets import QFileDialog, QMessageBox
 
 from lvgenerator.constants import GAEBPhase
 from lvgenerator.export.excel_exporter import ExcelExporter
+from lvgenerator.gaeb.formula_persistence import load_formula_metadata, save_formula_metadata
 from lvgenerator.gaeb.phase_rules import get_rules
 from lvgenerator.gaeb.reader import GAEBReader
 from lvgenerator.gaeb.writer import GAEBWriter
@@ -79,6 +80,9 @@ class ProjectController:
             )
             return
 
+        # Restore formula metadata from sidecar file
+        load_formula_metadata(project, file_path)
+
         self._current_file_path = file_path
         self._recent_files.add_file(file_path)
         self._update_recent_menu()
@@ -115,6 +119,8 @@ class ProjectController:
     def _do_save(self, file_path: str) -> None:
         try:
             self.writer.write(self.main.project, file_path)
+            # Save formula metadata to sidecar file
+            save_formula_metadata(self.main.project, file_path)
             self.main.window.status_bar.showMessage(
                 f"Gespeichert: {file_path}", 5000
             )
