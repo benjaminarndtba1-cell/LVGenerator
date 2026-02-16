@@ -4,12 +4,12 @@ from lvgenerator.commands.base import BaseCommand
 
 
 class EditProjectPropertyCommand(BaseCommand):
-    """Undoable Aenderung an Projekteigenschaften."""
+    """Undoable Änderung an Projekteigenschaften."""
 
     def __init__(self, obj, property_name: str, old_value, new_value,
                  description: str = ""):
         super().__init__(
-            description or f"Projekteigenschaft '{property_name}' aendern"
+            description or f"Projekteigenschaft '{property_name}' ändern"
         )
         self.obj = obj
         self.property_name = property_name

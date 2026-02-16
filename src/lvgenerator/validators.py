@@ -32,7 +32,7 @@ class ValidationResult:
 
 
 class ItemValidator:
-    """Validiert eine Position gemaess Phasenregeln."""
+    """Validiert eine Position gemäß Phasenregeln."""
 
     def validate(self, item: Item, phase: GAEBPhase) -> ValidationResult:
         errors: list[ValidationError] = []
@@ -79,7 +79,7 @@ class ItemValidator:
                 _result, error = evaluate_formula(item.formula)
                 if error:
                     errors.append(ValidationError(
-                        "formula", f"Ungueltige Formel: {error}"
+                        "formula", f"Ungültige Formel: {error}"
                     ))
 
         return ValidationResult(errors)
@@ -141,11 +141,11 @@ class ProjectValidator:
 
 
 def validate_decimal_input(text: str) -> tuple[Optional[Decimal], Optional[str]]:
-    """Validiert eine Dezimaleingabe. Gibt (Wert, Fehlermeldung) zurueck."""
+    """Validiert eine Dezimaleingabe. Gibt (Wert, Fehlermeldung) zurück."""
     if not text.strip():
         return None, None
     try:
         val = Decimal(text)
         return val, None
     except InvalidOperation:
-        return None, "Ungueltiger Zahlenwert"
+        return None, "Ungültiger Zahlenwert"

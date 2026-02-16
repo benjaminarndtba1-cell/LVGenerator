@@ -37,7 +37,7 @@ class ExcelExporter:
         ws.cell(row=2, column=1,
                 value=f"Phase: {project.phase.name} - {project.phase.label_de}")
 
-        # Spaltenueberschriften
+        # Spaltenüberschriften
         row = 4
         for col, header in enumerate(headers, 1):
             cell = ws.cell(row=row, column=col, value=header)

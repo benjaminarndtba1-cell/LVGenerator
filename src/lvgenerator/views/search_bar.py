@@ -4,7 +4,7 @@ from PySide6.QtWidgets import QHBoxLayout, QLineEdit, QWidget
 
 
 class SearchBarWidget(QWidget):
-    """Suchleiste fuer das Leistungsverzeichnis."""
+    """Suchleiste für das Leistungsverzeichnis."""
     search_changed = Signal(str)
 
     def __init__(self, parent=None):

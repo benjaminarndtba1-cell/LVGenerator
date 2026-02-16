@@ -106,6 +106,6 @@ def evaluate_formula(formula: str) -> Tuple[Optional[Decimal], Optional[str]]:
     except TypeError as e:
         return None, f"Typfehler: {e}"
     except (InvalidOperation, ValueError, OverflowError):
-        return None, "Ungueltiger Zahlenwert"
+        return None, "Ungültiger Zahlenwert"
     except Exception:
         return None, "Fehler bei der Auswertung"

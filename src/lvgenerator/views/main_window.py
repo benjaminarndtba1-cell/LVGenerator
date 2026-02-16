@@ -36,7 +36,7 @@ class MainWindow(QMainWindow):
         self.action_new = QAction("&Neu", self)
         self.action_new.setShortcut(QKeySequence.New)
 
-        self.action_open = QAction("&Oeffnen...", self)
+        self.action_open = QAction("&Öffnen...", self)
         self.action_open.setShortcut(QKeySequence.Open)
 
         self.action_save = QAction("&Speichern", self)
@@ -51,7 +51,7 @@ class MainWindow(QMainWindow):
         self.action_exit.setShortcut(QKeySequence.Quit)
         self.action_exit.triggered.connect(self.close)
 
-        self.action_undo = QAction("Rueckgaengig", self)
+        self.action_undo = QAction("Rückgängig", self)
         self.action_undo.setShortcut(QKeySequence.Undo)
         self.action_undo.setEnabled(False)
 
@@ -59,9 +59,9 @@ class MainWindow(QMainWindow):
         self.action_redo.setShortcut(QKeySequence.Redo)
         self.action_redo.setEnabled(False)
 
-        self.action_add_category = QAction("Kategorie hinzufuegen", self)
-        self.action_add_item = QAction("Position hinzufuegen", self)
-        self.action_delete = QAction("Loeschen", self)
+        self.action_add_category = QAction("Kategorie hinzufügen", self)
+        self.action_add_item = QAction("Position hinzufügen", self)
+        self.action_delete = QAction("Löschen", self)
         self.action_delete.setShortcut(QKeySequence.Delete)
 
         self.action_move_up = QAction("Nach oben", self)
@@ -77,7 +77,7 @@ class MainWindow(QMainWindow):
 
         self.action_project_info = QAction("Projektinformationen...", self)
 
-        self.action_about = QAction("Ueber LVGenerator", self)
+        self.action_about = QAction("Über LVGenerator", self)
 
         self.action_global_constants = QAction("Globale Konstanten...", self)
 
@@ -87,7 +87,7 @@ class MainWindow(QMainWindow):
         file_menu = menu_bar.addMenu("&Datei")
         file_menu.addAction(self.action_new)
         file_menu.addAction(self.action_open)
-        self.recent_files_menu = file_menu.addMenu("Zuletzt geoeffnet")
+        self.recent_files_menu = file_menu.addMenu("Zuletzt geöffnet")
         self.recent_files_menu.setEnabled(False)
         file_menu.addSeparator()
         file_menu.addAction(self.action_save)
@@ -168,7 +168,7 @@ class MainWindow(QMainWindow):
         # Empty placeholder
         empty_widget = QWidget()
         empty_layout = QVBoxLayout(empty_widget)
-        empty_label = QLabel("Waehlen Sie ein Element im Baum aus.")
+        empty_label = QLabel("Wählen Sie ein Element im Baum aus.")
         empty_label.setAlignment(Qt.AlignCenter)
         empty_layout.addWidget(empty_label)
 
@@ -224,7 +224,7 @@ class MainWindow(QMainWindow):
         self.selection_info_label.setText(text)
 
     def update_recent_files_menu(self, files: list[str], callback) -> None:
-        """Aktualisiert das Untermenue mit den zuletzt geoeffneten Dateien."""
+        """Aktualisiert das Untermenü mit den zuletzt geöffneten Dateien."""
         self.recent_files_menu.clear()
         for file_path in files:
             name = Path(file_path).name

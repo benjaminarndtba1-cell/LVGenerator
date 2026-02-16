@@ -46,7 +46,7 @@ class PhaseConverter:
             # Handle totals at BoQ level
             if not target_rules.has_totals and new_project.boq.info.totals:
                 warnings.append(
-                    "BoQ-Summen wurden entfernt (Zielphase unterstuetzt keine Summen)"
+                    "BoQ-Summen wurden entfernt (Zielphase unterstützt keine Summen)"
                 )
                 new_project.boq.info.totals = None
 
@@ -70,9 +70,9 @@ class PhaseConverter:
             warnings.append("'Nicht angeboten' Markierungen werden entfernt")
 
         if not source_rules.has_prices and target_rules.has_prices:
-            warnings.append("Preise muessen nachgetragen werden")
+            warnings.append("Preise müssen nachgetragen werden")
         if not source_rules.has_quantities and target_rules.has_quantities:
-            warnings.append("Mengen muessen nachgetragen werden")
+            warnings.append("Mengen müssen nachgetragen werden")
 
         return warnings
 

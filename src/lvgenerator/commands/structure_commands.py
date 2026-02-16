@@ -8,7 +8,7 @@ class AddCategoryCommand(BaseCommand):
 
     def __init__(self, parent_list: list, category: BoQCategory,
                  index: int = -1):
-        super().__init__(f"Kategorie '{category.label}' hinzufuegen")
+        super().__init__(f"Kategorie '{category.label}' hinzufügen")
         self.parent_list = parent_list
         self.category = category
         self.index = index
@@ -28,7 +28,7 @@ class DeleteCategoryCommand(BaseCommand):
     """Undoable command for removing a category from a list."""
 
     def __init__(self, parent_list: list, category: BoQCategory):
-        super().__init__(f"Kategorie '{category.label}' loeschen")
+        super().__init__(f"Kategorie '{category.label}' löschen")
         self.parent_list = parent_list
         self.category = category
         self.index = -1
@@ -46,7 +46,7 @@ class AddItemCommand(BaseCommand):
 
     def __init__(self, parent_category: BoQCategory, item: Item,
                  index: int = -1):
-        super().__init__(f"Position '{item.rno_part or 'neu'}' hinzufuegen")
+        super().__init__(f"Position '{item.rno_part or 'neu'}' hinzufügen")
         self.parent_category = parent_category
         self.item = item
         self.index = index
@@ -66,7 +66,7 @@ class DeleteItemCommand(BaseCommand):
     """Undoable command for removing an item from a category."""
 
     def __init__(self, parent_category: BoQCategory, item: Item):
-        super().__init__(f"Position '{item.rno_part}' loeschen")
+        super().__init__(f"Position '{item.rno_part}' löschen")
         self.parent_category = parent_category
         self.item = item
         self.index = -1

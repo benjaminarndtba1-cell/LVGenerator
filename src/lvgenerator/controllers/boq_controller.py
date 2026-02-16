@@ -69,13 +69,13 @@ class BoQController:
                 QMessageBox.warning(
                     self.main.window,
                     "Keine Kategorie",
-                    "Bitte waehlen Sie eine Kategorie aus.",
+                    "Bitte wählen Sie eine Kategorie aus.",
                 )
         else:
             QMessageBox.warning(
                 self.main.window,
                 "Keine Kategorie",
-                "Bitte waehlen Sie zuerst eine Kategorie aus.",
+                "Bitte wählen Sie zuerst eine Kategorie aus.",
             )
 
     def delete_selected(self) -> None:
@@ -88,8 +88,8 @@ class BoQController:
 
         reply = QMessageBox.question(
             self.main.window,
-            "Loeschen bestaetigen",
-            "Soll das ausgewaehlte Element geloescht werden?",
+            "Löschen bestätigen",
+            "Soll das ausgewählte Element gelöscht werden?",
             QMessageBox.Yes | QMessageBox.No,
         )
         if reply != QMessageBox.Yes:

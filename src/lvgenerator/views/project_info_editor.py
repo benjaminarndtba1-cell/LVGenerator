@@ -17,7 +17,7 @@ from lvgenerator.models.project import GAEBProject
 
 
 class ProjectInfoEditorWidget(QWidget):
-    """Editor fuer Projektinformationen (PrjInfo, Auftraggeber, LV-Info)."""
+    """Editor für Projektinformationen (PrjInfo, Auftraggeber, LV-Info)."""
     project_changed = Signal()
 
     def __init__(self, parent=None):
@@ -45,10 +45,10 @@ class ProjectInfoEditorWidget(QWidget):
         self.currency_edit.setMaximumWidth(80)
         self.currency_label_edit = QLineEdit()
         prj_form.addRow("Projektname:", self.prj_name_edit)
-        prj_form.addRow("Projektkuerzel:", self.prj_label_edit)
+        prj_form.addRow("Projektkürzel:", self.prj_label_edit)
         prj_form.addRow("Beschreibung:", self.prj_description_edit)
-        prj_form.addRow("Waehrung:", self.currency_edit)
-        prj_form.addRow("Waehrungsbezeichnung:", self.currency_label_edit)
+        prj_form.addRow("Währung:", self.currency_edit)
+        prj_form.addRow("Währungsbezeichnung:", self.currency_label_edit)
         layout.addWidget(prj_group)
 
         # Auftraggeber
@@ -64,7 +64,7 @@ class ProjectInfoEditorWidget(QWidget):
         owner_form.addRow("Name 1:", self.owner_name1_edit)
         owner_form.addRow("Name 2:", self.owner_name2_edit)
         owner_form.addRow("Name 3:", self.owner_name3_edit)
-        owner_form.addRow("Strasse:", self.owner_street_edit)
+        owner_form.addRow("Straße:", self.owner_street_edit)
         owner_form.addRow("PLZ:", self.owner_pcode_edit)
         owner_form.addRow("Ort:", self.owner_city_edit)
         layout.addWidget(owner_group)
@@ -75,7 +75,7 @@ class ProjectInfoEditorWidget(QWidget):
         self.boq_name_edit = QLineEdit()
         self.boq_label_edit = QLineEdit()
         boq_form.addRow("LV-Bezeichnung:", self.boq_name_edit)
-        boq_form.addRow("LV-Kuerzel:", self.boq_label_edit)
+        boq_form.addRow("LV-Kürzel:", self.boq_label_edit)
         layout.addWidget(boq_group)
 
         layout.addStretch()

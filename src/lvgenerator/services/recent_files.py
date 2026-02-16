@@ -7,7 +7,7 @@ MAX_RECENT_FILES = 10
 
 
 class RecentFilesManager:
-    """Verwaltet die Liste der zuletzt geoeffneten Dateien."""
+    """Verwaltet die Liste der zuletzt geöffneten Dateien."""
 
     SETTINGS_KEY = "recent_files"
 
@@ -15,14 +15,14 @@ class RecentFilesManager:
         self._settings = QSettings()
 
     def get_recent_files(self) -> list[str]:
-        """Gibt die Liste der zuletzt geoeffneten Dateien zurueck."""
+        """Gibt die Liste der zuletzt geöffneten Dateien zurück."""
         files = self._settings.value(self.SETTINGS_KEY, [])
         if isinstance(files, str):
             files = [files] if files else []
         return [f for f in files if Path(f).exists()][:MAX_RECENT_FILES]
 
     def add_file(self, file_path: str) -> None:
-        """Fuegt eine Datei an erster Stelle hinzu."""
+        """Fügt eine Datei an erster Stelle hinzu."""
         abs_path = str(Path(file_path).resolve())
         files = self.get_recent_files()
         files = [f for f in files if f != abs_path]

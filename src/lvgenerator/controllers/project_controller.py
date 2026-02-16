@@ -59,7 +59,7 @@ class ProjectController:
             "Alle Dateien (*)"
         )
         file_path, _ = QFileDialog.getOpenFileName(
-            self.main.window, "GAEB-Datei oeffnen", "", file_filter
+            self.main.window, "GAEB-Datei öffnen", "", file_filter
         )
         if not file_path:
             return
@@ -75,7 +75,7 @@ class ProjectController:
         except Exception as e:
             QMessageBox.critical(
                 self.main.window,
-                "Fehler beim Oeffnen",
+                "Fehler beim Öffnen",
                 f"Die Datei konnte nicht gelesen werden:\n{e}",
             )
             return

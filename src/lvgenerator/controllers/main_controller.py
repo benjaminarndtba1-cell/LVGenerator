@@ -54,7 +54,7 @@ class MainController:
         self.undo_stack.canRedoChanged.connect(self.window.action_redo.setEnabled)
         self.undo_stack.undoTextChanged.connect(
             lambda t: self.window.action_undo.setText(
-                f"Rueckgaengig: {t}" if t else "Rueckgaengig"
+                f"Rückgängig: {t}" if t else "Rückgängig"
             )
         )
         self.undo_stack.redoTextChanged.connect(
@@ -390,9 +390,9 @@ class MainController:
     def _show_about(self) -> None:
         QMessageBox.about(
             self.window,
-            "Ueber LVGenerator",
+            "Über LVGenerator",
             "LVGenerator v0.1.0\n\n"
             "Desktop-Anwendung zum Lesen und Schreiben\n"
             "von GAEB DA XML Dateien.\n\n"
-            "Unterstuetzte Phasen: X81 - X86",
+            "Unterstützte Phasen: X81 - X86",
         )

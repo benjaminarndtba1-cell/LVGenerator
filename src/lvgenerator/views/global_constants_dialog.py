@@ -51,11 +51,11 @@ class GlobalConstantsDialog(QDialog):
         # Buttons
         btn_layout = QHBoxLayout()
 
-        self.btn_add = QPushButton("Hinzufuegen")
+        self.btn_add = QPushButton("Hinzufügen")
         self.btn_add.clicked.connect(self._on_add)
         btn_layout.addWidget(self.btn_add)
 
-        self.btn_delete = QPushButton("Loeschen")
+        self.btn_delete = QPushButton("Löschen")
         self.btn_delete.clicked.connect(self._on_delete)
         btn_layout.addWidget(self.btn_delete)
 
@@ -99,8 +99,8 @@ class GlobalConstantsDialog(QDialog):
         name = name.strip().upper()
         if not re.match(r'^[A-Z_][A-Z0-9_]*$', name):
             QMessageBox.warning(
-                self, "Ungueltiger Name",
-                "Der Name darf nur Grossbuchstaben, Ziffern und "
+                self, "Ungültiger Name",
+                "Der Name darf nur Großbuchstaben, Ziffern und "
                 "Unterstriche enthalten und muss mit einem Buchstaben "
                 "oder Unterstrich beginnen."
             )
@@ -133,8 +133,8 @@ class GlobalConstantsDialog(QDialog):
             return
         name = self.table.item(row, 0).text()
         reply = QMessageBox.question(
-            self, "Konstante loeschen",
-            f"Konstante '{name}' wirklich loeschen?",
+            self, "Konstante löschen",
+            f"Konstante '{name}' wirklich löschen?",
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
         )
         if reply == QMessageBox.StandardButton.Yes:
@@ -143,7 +143,7 @@ class GlobalConstantsDialog(QDialog):
     def _on_reset(self) -> None:
         reply = QMessageBox.question(
             self, "Standardwerte wiederherstellen",
-            "Alle Konstanten auf die Standardwerte zuruecksetzen?\n"
+            "Alle Konstanten auf die Standardwerte zurücksetzen?\n"
             "Eigene Konstanten gehen verloren.",
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
         )
@@ -161,8 +161,8 @@ class GlobalConstantsDialog(QDialog):
                 Decimal(value_text)
             except (InvalidOperation, ValueError):
                 QMessageBox.warning(
-                    self, "Ungueltiger Wert",
-                    f"Der Wert fuer '{name}' ist keine gueltige Zahl: '{value_text}'"
+                    self, "Ungültiger Wert",
+                    f"Der Wert für '{name}' ist keine gültige Zahl: '{value_text}'"
                 )
                 self.table.selectRow(row)
                 return
