@@ -35,6 +35,9 @@ class ItemDescription:
     compl_tsa: str = ""
     compl_tsb: str = ""
     stlb_bau_raw: Optional[object] = None  # Raw XML element preserved for roundtrip
+    text_complements_raw: list = field(default_factory=list)  # Raw TextComplement XML
+    detail_txt_raw: Optional[object] = None  # Raw DetailTxt XML for roundtrip (interleaved Text/TextComplement)
+    perf_descr_raw: Optional[object] = None  # Raw PerfDescr XML element
 
 
 @dataclass
@@ -74,11 +77,15 @@ class Item:
     is_markup_item: bool = False
     markup_type: str = ""  # "IdentAsMark", "AllInCat", "ListInSubQty"
     markup_sub_qty_refs: list[str] = field(default_factory=list)  # IDRef values
+    it_markup: Optional[Decimal] = None
+    has_markup: bool = False  # Empty <Markup/> element
 
     # Bezugspositionen
     ref_descr: bool = False
     ref_rno: str = ""
+    ref_rno_idref: str = ""
     ref_perf_no: str = ""
+    ref_perf_no_idref: str = ""
     sum_descr: bool = False
 
     # Unterbeschreibungen (Leitbeschreibung)
@@ -86,6 +93,9 @@ class Item:
 
     # Katalogzuordnungen
     ctlg_assignments: list[CtlgAssignment] = field(default_factory=list)
+
+    # UP Breakdown
+    up_bkdn: bool = False  # Empty <UPBkdn/> element
 
     # Mengensplit
     qty_splits: list[dict] = field(default_factory=list)

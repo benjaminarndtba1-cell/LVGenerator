@@ -7,7 +7,7 @@ from typing import Optional, TYPE_CHECKING
 if TYPE_CHECKING:
     from lvgenerator.constants import GAEBPhase
     from lvgenerator.models.boq import BoQ
-    from lvgenerator.models.address import Address
+    from lvgenerator.models.address import Address, Contractor
     from lvgenerator.models.text_types import AddText
 
 
@@ -26,8 +26,8 @@ class PrjInfo:
     name: str = ""
     label: str = ""
     description: str = ""
-    currency: str = "EUR"
-    currency_label: str = "Euro"
+    currency: str = ""
+    currency_label: str = ""
     bid_comm_perm: bool = False
 
 
@@ -57,6 +57,7 @@ class GAEBProject:
     prj_info: PrjInfo = field(default_factory=PrjInfo)
     award_info: AwardInfo = field(default_factory=AwardInfo)
     owner: Optional[Address] = None
+    contractor: Optional[Contractor] = None
     phase: Optional[GAEBPhase] = None
     boq: Optional[BoQ] = None
     award_add_texts: list[AddText] = field(default_factory=list)

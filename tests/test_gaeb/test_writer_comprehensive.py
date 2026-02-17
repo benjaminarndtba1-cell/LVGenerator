@@ -80,7 +80,7 @@ class TestWriterPhases:
         GAEBWriter().write(project, path)
         reloaded = GAEBReader().read(path)
         item = reloaded.boq.categories[0].items[0]
-        assert item.qty is None  # X81 has no quantities
+        assert item.qty == Decimal("10")  # Qty preserved for roundtrip fidelity
         assert item.up is None
         assert item.it is None
 

@@ -5,6 +5,7 @@ from decimal import Decimal
 from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
+    from lvgenerator.models.boq import Totals
     from lvgenerator.models.item import Item
     from lvgenerator.models.text_types import AddText
 
@@ -22,6 +23,10 @@ class BoQCategory:
     exec_descr_html: str = ""
     aln_b_group_no: str = ""
     aln_b_ser_no: str = ""
+    remarks_raw: list = field(default_factory=list)  # Raw XML Remark elements in BoQBody
+    itemlist_remarks_raw: list = field(default_factory=list)  # Raw XML Remark elements in Itemlist
+    perf_descrs_raw: list = field(default_factory=list)  # Raw XML PerfDescr elements in Itemlist
+    totals: Optional[Totals] = None
 
     def get_full_ordinal(self, parent_ordinal: str = "") -> str:
         if parent_ordinal:

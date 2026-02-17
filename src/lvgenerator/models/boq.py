@@ -24,15 +24,19 @@ class Totals:
     total: Decimal = field(default_factory=lambda: Decimal("0.00"))
     discount_pcnt: Optional[Decimal] = None
     discount_amt: Optional[Decimal] = None
+    tot_after_disc: Optional[Decimal] = None
     total_net: Optional[Decimal] = None
+    vat: Optional[Decimal] = None
     vat_amount: Optional[Decimal] = None
     total_gross: Optional[Decimal] = None
+    total_lsum: Optional[Decimal] = None
 
 
 @dataclass
 class Catalog:
     """Katalogdefinition (Ctlg) in BoQInfo."""
     ctlg_id: str = ""
+    ctlg_type: str = ""
     ctlg_name: str = ""
 
 
@@ -41,7 +45,7 @@ class BoQInfo:
     name: str = ""
     label: str = ""
     date: Optional[date] = None
-    outline_complete: str = "AllTxt"
+    outline_complete: str = ""
     breakdowns: list[BoQBkdn] = field(default_factory=list)
     catalogs: list[Catalog] = field(default_factory=list)
     no_up_comps: int = 0
@@ -55,3 +59,4 @@ class BoQ:
     id: str = ""
     info: BoQInfo = field(default_factory=BoQInfo)
     categories: list[BoQCategory] = field(default_factory=list)
+    remarks_raw: list = field(default_factory=list)  # Raw XML elements for roundtrip
