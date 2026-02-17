@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QAction, QIcon, QKeySequence, QUndoStack
+from PySide6.QtCore import QRect, Qt
+from PySide6.QtGui import QAction, QColor, QIcon, QKeySequence, QPainter, QPen, QPixmap, QUndoStack
 from PySide6.QtWidgets import (
     QMainWindow,
     QSplitter,
@@ -63,14 +63,14 @@ class MainWindow(QMainWindow):
         self.action_exit.triggered.connect(self.close)
 
         self.action_undo = QAction(
-            style.standardIcon(style.StandardPixmap.SP_ArrowBack),
+            self._make_undo_icon(),
             "Rückgängig", self,
         )
         self.action_undo.setShortcut(QKeySequence.Undo)
         self.action_undo.setEnabled(False)
 
         self.action_redo = QAction(
-            style.standardIcon(style.StandardPixmap.SP_ArrowForward),
+            self._make_redo_icon(),
             "Wiederholen", self,
         )
         self.action_redo.setShortcut(QKeySequence.Redo)
@@ -118,6 +118,54 @@ class MainWindow(QMainWindow):
         self.action_preisspiegel = QAction("Preisspiegel erstellen...", self)
 
         self.action_text_style = QAction("Textstil-Einstellungen...", self)
+
+        self.action_renumber_category = QAction(
+            "Bereich neu nummerieren", self,
+        )
+        self.action_renumber_all = QAction(
+            "Gesamtes LV neu nummerieren", self,
+        )
+
+    def _make_undo_icon(self) -> QIcon:
+        pixmap = QPixmap(24, 24)
+        pixmap.fill(Qt.transparent)
+        p = QPainter(pixmap)
+        p.setRenderHint(QPainter.Antialiasing)
+        pen = QPen(QColor("#cccccc"), 2.0)
+        p.setPen(pen)
+        # Curved arrow pointing left (undo)
+        from PySide6.QtCore import QPointF
+        from PySide6.QtGui import QPainterPath
+        path = QPainterPath()
+        path.moveTo(18, 8)
+        path.cubicTo(18, 4, 6, 4, 6, 10)
+        path.lineTo(6, 16)
+        p.drawPath(path)
+        # Arrow head
+        p.drawLine(QPointF(6, 16), QPointF(10, 13))
+        p.drawLine(QPointF(6, 16), QPointF(3, 12))
+        p.end()
+        return QIcon(pixmap)
+
+    def _make_redo_icon(self) -> QIcon:
+        pixmap = QPixmap(24, 24)
+        pixmap.fill(Qt.transparent)
+        p = QPainter(pixmap)
+        p.setRenderHint(QPainter.Antialiasing)
+        pen = QPen(QColor("#cccccc"), 2.0)
+        p.setPen(pen)
+        from PySide6.QtCore import QPointF
+        from PySide6.QtGui import QPainterPath
+        path = QPainterPath()
+        path.moveTo(6, 8)
+        path.cubicTo(6, 4, 18, 4, 18, 10)
+        path.lineTo(18, 16)
+        p.drawPath(path)
+        # Arrow head
+        p.drawLine(QPointF(18, 16), QPointF(14, 13))
+        p.drawLine(QPointF(18, 16), QPointF(21, 12))
+        p.end()
+        return QIcon(pixmap)
 
     def _setup_menu_bar(self) -> None:
         menu_bar = self.menuBar()

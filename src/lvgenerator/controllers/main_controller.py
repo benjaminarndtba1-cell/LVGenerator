@@ -82,6 +82,12 @@ class MainController:
         self.window.action_oz_mask.triggered.connect(self._on_oz_mask)
         self.window.action_text_style.triggered.connect(self._on_text_style)
         self.window.action_preisspiegel.triggered.connect(self._on_preisspiegel)
+        self.window.action_renumber_category.triggered.connect(
+            self._on_renumber_category
+        )
+        self.window.action_renumber_all.triggered.connect(
+            self._on_renumber_all
+        )
 
         # About
         self.window.action_about.triggered.connect(self._show_about)
@@ -387,14 +393,32 @@ class MainController:
                 menu.addAction(self.window.action_add_category)
                 menu.addAction(self.window.action_add_item)
                 menu.addSeparator()
-            menu.addAction(self.window.action_duplicate)
-            menu.addSeparator()
-            menu.addAction(self.window.action_move_up)
-            menu.addAction(self.window.action_move_down)
-            menu.addSeparator()
-            menu.addAction(self.window.action_delete)
+                menu.addAction(self.window.action_duplicate)
+                menu.addSeparator()
+                menu.addAction(self.window.action_move_up)
+                menu.addAction(self.window.action_move_down)
+                menu.addSeparator()
+                menu.addAction(self.window.action_delete)
+                menu.addSeparator()
+                menu.addAction(self.window.action_renumber_category)
+                menu.addAction(self.window.action_renumber_all)
+            elif node and node.node_type == "item":
+                menu.addAction(self.window.action_add_item)
+                menu.addSeparator()
+                menu.addAction(self.window.action_duplicate)
+                menu.addSeparator()
+                menu.addAction(self.window.action_move_up)
+                menu.addAction(self.window.action_move_down)
+                menu.addSeparator()
+                menu.addAction(self.window.action_delete)
+                menu.addSeparator()
+                menu.addAction(self.window.action_renumber_category)
+                menu.addAction(self.window.action_renumber_all)
         else:
             menu.addAction(self.window.action_add_category)
+            if self.project and self.project.boq:
+                menu.addSeparator()
+                menu.addAction(self.window.action_renumber_all)
 
         menu.exec(self.window.tree_view.viewport().mapToGlobal(pos))
 
@@ -486,6 +510,116 @@ class MainController:
         from lvgenerator.views.preisspiegel_dialog import PreisSpiegelDialog
         dialog = PreisSpiegelDialog(self.project, self.window)
         dialog.exec()
+
+    def _on_renumber_category(self) -> None:
+        """Renumber items within the selected category."""
+        if self.project is None or self.project.boq is None:
+            return
+        node = self.boq_ctrl._get_selected_node()
+        if node is None:
+            return
+
+        # Find the category to renumber
+        if node.node_type == "category":
+            category = node.data
+        elif node.node_type == "item" and node.parent_node:
+            category = node.parent_node.data
+        else:
+            return
+
+        from lvgenerator.controllers.boq_controller import (
+            _get_mask_level_for_item,
+        )
+        breakdowns = self.boq_ctrl._get_breakdowns()
+        mask_level = _get_mask_level_for_item(breakdowns)
+        if not mask_level:
+            QMessageBox.information(
+                self.window,
+                "Keine OZ-Maske",
+                "Bitte konfigurieren Sie zuerst eine OZ-Maske.",
+            )
+            return
+
+        # Build list of (object, old_rno, new_rno)
+        changes = []
+        for i, item in enumerate(category.items):
+            new_rno = str(i + 1).zfill(mask_level.length)
+            if item.rno_part != new_rno:
+                changes.append((item, item.rno_part, new_rno))
+
+        if not changes:
+            return
+
+        from lvgenerator.commands.base import BaseCommand
+
+        class RenumberCommand(BaseCommand):
+            def __init__(cmd_self, changes_list, desc):
+                super().__init__(desc)
+                cmd_self._changes = changes_list
+
+            def redo(cmd_self) -> None:
+                for obj, _old, new in cmd_self._changes:
+                    obj.rno_part = new
+
+            def undo(cmd_self) -> None:
+                for obj, old, _new in cmd_self._changes:
+                    obj.rno_part = old
+
+        cmd = RenumberCommand(changes, "Bereich neu nummerieren")
+        self.execute_command(cmd)
+
+    def _on_renumber_all(self) -> None:
+        """Renumber the entire LV (all categories and items)."""
+        if self.project is None or self.project.boq is None:
+            return
+
+        from lvgenerator.controllers.boq_controller import (
+            _get_mask_level_for_category,
+            _get_mask_level_for_item,
+        )
+        breakdowns = self.boq_ctrl._get_breakdowns()
+        item_mask = _get_mask_level_for_item(breakdowns)
+
+        changes = []
+
+        def renumber_categories(categories, depth):
+            cat_mask = _get_mask_level_for_category(breakdowns, depth)
+            for i, cat in enumerate(categories):
+                if cat_mask:
+                    new_rno = str(i + 1).zfill(cat_mask.length)
+                    if cat.rno_part != new_rno:
+                        changes.append((cat, cat.rno_part, new_rno))
+                # Renumber items within this category
+                if item_mask:
+                    for j, item in enumerate(cat.items):
+                        new_rno = str(j + 1).zfill(item_mask.length)
+                        if item.rno_part != new_rno:
+                            changes.append((item, item.rno_part, new_rno))
+                # Recurse into subcategories
+                renumber_categories(cat.subcategories, depth + 1)
+
+        renumber_categories(self.project.boq.categories, 0)
+
+        if not changes:
+            return
+
+        from lvgenerator.commands.base import BaseCommand
+
+        class RenumberCommand(BaseCommand):
+            def __init__(cmd_self, changes_list, desc):
+                super().__init__(desc)
+                cmd_self._changes = changes_list
+
+            def redo(cmd_self) -> None:
+                for obj, _old, new in cmd_self._changes:
+                    obj.rno_part = new
+
+            def undo(cmd_self) -> None:
+                for obj, old, _new in cmd_self._changes:
+                    obj.rno_part = old
+
+        cmd = RenumberCommand(changes, "Gesamtes LV neu nummerieren")
+        self.execute_command(cmd)
 
     def _show_about(self) -> None:
         QMessageBox.about(

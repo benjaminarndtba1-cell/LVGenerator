@@ -1,7 +1,7 @@
 from typing import Optional
 
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QFont, QKeySequence, QTextCharFormat, QTextCursor, QTextListFormat
+from PySide6.QtGui import QFont, QKeySequence, QTextBlockFormat, QTextCharFormat, QTextCursor, QTextListFormat
 from PySide6.QtWidgets import (
     QHBoxLayout,
     QTextEdit,
@@ -61,6 +61,12 @@ class RichTextEditWidget(QWidget):
         self._btn_bullet = self._make_toggle_button("\u2022", "Aufzaehlung")
         toolbar.addWidget(self._btn_bullet)
 
+        self._btn_indent = self._make_button("\u2192", "Einruecken")
+        toolbar.addWidget(self._btn_indent)
+
+        self._btn_outdent = self._make_button("\u2190", "Ausruecken")
+        toolbar.addWidget(self._btn_outdent)
+
         toolbar.addStretch()
         layout.addLayout(toolbar)
 
@@ -69,6 +75,14 @@ class RichTextEditWidget(QWidget):
         self._text_edit.setMaximumHeight(self._max_height)
         self._text_edit.setTabChangesFocus(True)
         layout.addWidget(self._text_edit)
+
+    def _make_button(self, text: str, tooltip: str) -> QToolButton:
+        btn = QToolButton()
+        btn.setText(text)
+        btn.setToolTip(tooltip)
+        btn.setFixedSize(28, 28)
+        btn.setStyleSheet("QToolButton { padding: 2px; }")
+        return btn
 
     def _make_toggle_button(self, text: str, tooltip: str) -> QToolButton:
         btn = QToolButton()
@@ -87,6 +101,8 @@ class RichTextEditWidget(QWidget):
         self._btn_italic.clicked.connect(self._on_italic)
         self._btn_underline.clicked.connect(self._on_underline)
         self._btn_bullet.clicked.connect(self._on_bullet_list)
+        self._btn_indent.clicked.connect(self._on_indent)
+        self._btn_outdent.clicked.connect(self._on_outdent)
         self._text_edit.cursorPositionChanged.connect(self._update_toolbar_state)
         self._text_edit.textChanged.connect(self.content_changed.emit)
 
@@ -209,6 +225,19 @@ class RichTextEditWidget(QWidget):
             cursor.select(QTextCursor.SelectionType.WordUnderCursor)
         cursor.mergeCharFormat(fmt)
         self._text_edit.mergeCurrentCharFormat(fmt)
+
+    def _on_indent(self) -> None:
+        cursor = self._text_edit.textCursor()
+        fmt = cursor.blockFormat()
+        fmt.setIndent(fmt.indent() + 1)
+        cursor.setBlockFormat(fmt)
+
+    def _on_outdent(self) -> None:
+        cursor = self._text_edit.textCursor()
+        fmt = cursor.blockFormat()
+        if fmt.indent() > 0:
+            fmt.setIndent(fmt.indent() - 1)
+            cursor.setBlockFormat(fmt)
 
     def _update_toolbar_state(self) -> None:
         fmt = self._text_edit.currentCharFormat()
