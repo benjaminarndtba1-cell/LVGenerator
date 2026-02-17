@@ -10,7 +10,6 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QLineEdit,
-    QPlainTextEdit,
     QVBoxLayout,
     QWidget,
 )
@@ -24,6 +23,7 @@ from lvgenerator.models.formula_evaluator import evaluate_formula
 from lvgenerator.models.item import Item
 from lvgenerator.resources import theme
 from lvgenerator.validators import ItemValidator
+from lvgenerator.views.rich_text_edit import RichTextEditWidget
 
 
 class ItemEditorWidget(QWidget):
@@ -35,12 +35,17 @@ class ItemEditorWidget(QWidget):
         self._updating = False
         self._undo_stack: Optional[QUndoStack] = None
         self._phase: Optional[GAEBPhase] = None
+        self._gaeb_ns: str = ""
         self._validator = ItemValidator()
         self._setup_ui()
         self._connect_signals()
 
     def set_undo_stack(self, stack: QUndoStack) -> None:
         self._undo_stack = stack
+
+    def set_gaeb_ns(self, ns: str) -> None:
+        """Set the GAEB namespace for HTML conversion."""
+        self._gaeb_ns = ns
 
     def _setup_ui(self) -> None:
         layout = QVBoxLayout(self)
@@ -53,13 +58,11 @@ class ItemEditorWidget(QWidget):
         self.rno_edit.setPlaceholderText("z.B. 0010")
         pos_layout.addRow("OZ:", self.rno_edit)
 
-        self.outline_edit = QPlainTextEdit()
-        self.outline_edit.setMaximumHeight(80)
+        self.outline_edit = RichTextEditWidget(max_height=80)
         self.outline_edit.setPlaceholderText("Kurztext der Position")
         pos_layout.addRow("Kurztext:", self.outline_edit)
 
-        self.detail_edit = QPlainTextEdit()
-        self.detail_edit.setMaximumHeight(200)
+        self.detail_edit = RichTextEditWidget(max_height=200)
         self.detail_edit.setPlaceholderText("Detaillierter Langtext")
         pos_layout.addRow("Langtext:", self.detail_edit)
 
@@ -113,14 +116,18 @@ class ItemEditorWidget(QWidget):
 
     def _connect_signals(self) -> None:
         self.rno_edit.textChanged.connect(self._on_field_changed)
-        self.outline_edit.textChanged.connect(self._on_field_changed)
-        self.detail_edit.textChanged.connect(self._on_field_changed)
         self.qty_edit.textChanged.connect(self._on_field_changed)
         self.qu_edit.textChanged.connect(self._on_field_changed)
         self.up_edit.textChanged.connect(self._on_field_changed)
         self.qty_tbd_check.toggled.connect(self._on_field_changed)
         self.formula_edit.textChanged.connect(self._on_formula_changed)
         self.use_calculated_check.toggled.connect(self._on_calculation_mode_changed)
+
+        # Rich text editors use editing_finished for commit-on-focus-out
+        self.outline_edit.editing_finished.connect(self._on_outline_edited)
+        self.detail_edit.editing_finished.connect(self._on_detail_edited)
+        self.outline_edit.content_changed.connect(self._on_text_content_changed)
+        self.detail_edit.content_changed.connect(self._on_text_content_changed)
 
     def set_item(self, item: Optional[Item]) -> None:
         self._updating = True
@@ -131,8 +138,22 @@ class ItemEditorWidget(QWidget):
         else:
             self.setEnabled(True)
             self.rno_edit.setText(item.rno_part)
-            self.outline_edit.setPlainText(item.description.outline_text)
-            self.detail_edit.setPlainText(item.description.detail_text)
+
+            # Load rich text: prefer HTML, fallback to plain text
+            if item.description.outline_html and self._gaeb_ns:
+                self.outline_edit.set_gaeb_html(
+                    item.description.outline_html, "TextOutlTxt", self._gaeb_ns
+                )
+            else:
+                self.outline_edit.set_plain_text(item.description.outline_text)
+
+            if item.description.detail_html and self._gaeb_ns:
+                self.detail_edit.set_gaeb_html(
+                    item.description.detail_html, "Text", self._gaeb_ns
+                )
+            else:
+                self.detail_edit.set_plain_text(item.description.detail_text)
+
             self.qty_edit.setText(str(item.qty) if item.qty is not None else "")
             self.qu_edit.setText(item.qu)
             self.up_edit.setText(str(item.up) if item.up is not None else "")
@@ -164,6 +185,11 @@ class ItemEditorWidget(QWidget):
         """Refresh formula result, e.g. after global constants changed."""
         self._update_formula_result()
         self._update_total()
+
+    def commit_text_edits(self) -> None:
+        """Force commit any pending rich text changes (e.g. before item switch)."""
+        self.outline_edit.commit_if_changed()
+        self.detail_edit.commit_if_changed()
 
     def _clear_fields(self) -> None:
         self.rno_edit.clear()
@@ -202,6 +228,62 @@ class ItemEditorWidget(QWidget):
             self._undo_stack.push(cmd)
             self._updating = False
 
+    def _on_outline_edited(self, gaeb_html: str, plain_text: str) -> None:
+        """Handle outline rich text commit (on focus-out)."""
+        if self._updating or self._current_item is None:
+            return
+        desc = self._current_item.description
+
+        has_changes = False
+        if self._undo_stack:
+            self._undo_stack.beginMacro("Kurztext aendern")
+
+        if gaeb_html != desc.outline_html:
+            self._push_desc_command("outline_html", desc.outline_html, gaeb_html)
+            has_changes = True
+        if plain_text != desc.outline_text:
+            self._push_desc_command("outline_text", desc.outline_text, plain_text)
+            has_changes = True
+
+        if self._undo_stack:
+            self._undo_stack.endMacro()
+
+        if has_changes:
+            self._validate()
+            self.item_changed.emit()
+
+    def _on_detail_edited(self, gaeb_html: str, plain_text: str) -> None:
+        """Handle detail rich text commit (on focus-out)."""
+        if self._updating or self._current_item is None:
+            return
+        desc = self._current_item.description
+
+        has_changes = False
+        if self._undo_stack:
+            self._undo_stack.beginMacro("Langtext aendern")
+
+        if gaeb_html != desc.detail_html:
+            self._push_desc_command("detail_html", desc.detail_html, gaeb_html)
+            has_changes = True
+        if plain_text != desc.detail_text:
+            self._push_desc_command("detail_text", desc.detail_text, plain_text)
+            has_changes = True
+        # Invalidate raw roundtrip data since user edited the text
+        if has_changes and desc.detail_txt_raw is not None:
+            self._push_desc_command("detail_txt_raw", desc.detail_txt_raw, None)
+
+        if self._undo_stack:
+            self._undo_stack.endMacro()
+
+        if has_changes:
+            self._validate()
+            self.item_changed.emit()
+
+    def _on_text_content_changed(self) -> None:
+        """Handle any content change in rich text editors (for dirty tracking)."""
+        if not self._updating:
+            self.item_changed.emit()
+
     def _on_field_changed(self) -> None:
         if self._updating or self._current_item is None:
             return
@@ -219,19 +301,6 @@ class ItemEditorWidget(QWidget):
         new_qty_tbd = self.qty_tbd_check.isChecked()
         if new_qty_tbd != item.qty_tbd:
             self._push_item_command("qty_tbd", item.qty_tbd, new_qty_tbd)
-
-        # Description fields
-        new_outline = self.outline_edit.toPlainText()
-        if new_outline != item.description.outline_text:
-            self._push_desc_command(
-                "outline_text", item.description.outline_text, new_outline
-            )
-
-        new_detail = self.detail_edit.toPlainText()
-        if new_detail != item.description.detail_text:
-            self._push_desc_command(
-                "detail_text", item.description.detail_text, new_detail
-            )
 
         # Decimal properties
         try:

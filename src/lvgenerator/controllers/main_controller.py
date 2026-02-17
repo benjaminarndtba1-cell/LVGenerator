@@ -11,6 +11,7 @@ from lvgenerator.constants import GAEBPhase
 from lvgenerator.controllers.boq_controller import BoQController
 from lvgenerator.controllers.item_controller import ItemController
 from lvgenerator.controllers.project_controller import ProjectController
+from lvgenerator.gaeb.namespaces import get_namespace
 from lvgenerator.gaeb.phase_converter import PhaseConverter
 from lvgenerator.gaeb.phase_rules import get_rules
 from lvgenerator.models.category import BoQCategory
@@ -79,6 +80,7 @@ class MainController:
             self._on_global_constants
         )
         self.window.action_oz_mask.triggered.connect(self._on_oz_mask)
+        self.window.action_text_style.triggered.connect(self._on_text_style)
         self.window.action_preisspiegel.triggered.connect(self._on_preisspiegel)
 
         # About
@@ -148,6 +150,10 @@ class MainController:
             self.window.item_editor.set_phase(project.phase)
             self.window.item_editor.set_price_visible(rules.has_prices)
 
+            # Set GAEB namespace for rich text HTML conversion
+            ns = get_namespace(project.phase, project.gaeb_info.version)
+            self.window.item_editor.set_gaeb_ns(ns)
+
             if not rules.has_prices:
                 self.window.tree_view.setColumnHidden(4, True)
                 self.window.tree_view.setColumnHidden(5, True)
@@ -192,10 +198,20 @@ class MainController:
         return proxy_index
 
     def _do_undo(self) -> None:
+        from PySide6.QtWidgets import QApplication, QTextEdit
+        focus = QApplication.focusWidget()
+        if isinstance(focus, QTextEdit) and focus.document().isUndoAvailable():
+            focus.undo()
+            return
         self.undo_stack.undo()
         self._on_after_undo_redo()
 
     def _do_redo(self) -> None:
+        from PySide6.QtWidgets import QApplication, QTextEdit
+        focus = QApplication.focusWidget()
+        if isinstance(focus, QTextEdit) and focus.document().isRedoAvailable():
+            focus.redo()
+            return
         self.undo_stack.redo()
         self._on_after_undo_redo()
 
@@ -205,6 +221,9 @@ class MainController:
         self._on_tree_selection(index)
 
     def _on_tree_selection(self, index: QModelIndex) -> None:
+        # Commit any pending rich text changes before switching
+        self.window.item_editor.commit_text_edits()
+
         if not index.isValid() or self.tree_model is None:
             self.window.show_empty_editor()
             self.window.update_selection_info("")
@@ -446,6 +465,15 @@ class MainController:
 
         cmd = ChangeOZMaskCommand(self.project, old_breakdowns, new_breakdowns)
         self.execute_command(cmd)
+
+    def _on_text_style(self) -> None:
+        from lvgenerator.views.text_style_dialog import TextStyleDialog
+        dialog = TextStyleDialog(self.window)
+        if dialog.exec() == TextStyleDialog.DialogCode.Accepted:
+            # Refresh current editor to apply new default styles
+            index = self.window.tree_view.currentIndex()
+            if index.isValid():
+                self._on_tree_selection(index)
 
     def _on_preisspiegel(self) -> None:
         if self.project is None or self.project.boq is None:

@@ -568,7 +568,8 @@ class GAEBWriter:
         if desc.perf_descr_raw is not None:
             description.append(deepcopy(desc.perf_descr_raw))
 
-        if (desc.detail_text or desc.outline_text or desc.compl_tsa
+        if (desc.detail_text or desc.detail_html or desc.outline_text
+                or desc.outline_html or desc.compl_tsa
                 or desc.compl_tsb or desc.text_complements_raw):
             complete = self._sub(description, "CompleteText", ns)
 
@@ -577,7 +578,7 @@ class GAEBWriter:
             if desc.compl_tsb:
                 self._sub(complete, "ComplTSB", ns, desc.compl_tsb)
 
-            if desc.detail_text or desc.text_complements_raw:
+            if desc.detail_text or desc.detail_html or desc.text_complements_raw:
                 if desc.detail_txt_raw is not None:
                     # Roundtrip: preserve entire DetailTxt with interleaved Text/TextComplement
                     complete.append(deepcopy(desc.detail_txt_raw))
@@ -596,7 +597,7 @@ class GAEBWriter:
                     for tc in desc.text_complements_raw:
                         detail_txt.append(deepcopy(tc))
 
-            if desc.outline_text:
+            if desc.outline_text or desc.outline_html:
                 outline = self._sub(complete, "OutlineText", ns)
                 outl_txt = self._sub(outline, "OutlTxt", ns)
                 if desc.outline_html:

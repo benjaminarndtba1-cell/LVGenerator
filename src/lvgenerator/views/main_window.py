@@ -117,6 +117,8 @@ class MainWindow(QMainWindow):
 
         self.action_preisspiegel = QAction("Preisspiegel erstellen...", self)
 
+        self.action_text_style = QAction("Textstil-Einstellungen...", self)
+
     def _setup_menu_bar(self) -> None:
         menu_bar = self.menuBar()
 
@@ -152,6 +154,7 @@ class MainWindow(QMainWindow):
         extras_menu = menu_bar.addMenu("E&xtras")
         extras_menu.addAction(self.action_global_constants)
         extras_menu.addAction(self.action_oz_mask)
+        extras_menu.addAction(self.action_text_style)
         extras_menu.addSeparator()
         extras_menu.addAction(self.action_preisspiegel)
 
