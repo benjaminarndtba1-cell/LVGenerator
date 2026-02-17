@@ -4635,10 +4635,10 @@ RQAUUUUAFFFFABRRRQAUUUUAFFFFAH//2QA=</image>
                         </Description>
                       </Remark>
                       <Item ID="CBAFBINA" RNoPart="10">
+                        <LumpSumItem>Yes</LumpSumItem>
                         <Qty>1.000</Qty>
                         <PredQty>1.000</PredQty>
                         <QU>psch</QU>
-                        <LumpSumItem>Yes</LumpSumItem>
                         <Description>
                           <StLNo>9300201123000202</StLNo>
                           <CompleteText>
@@ -4673,6 +4673,10 @@ RQAUUUUAFFFFABRRRQAUUUUAFFFFAH//2QA=</image>
                         <Qty>200.000</Qty>
                         <PredQty>200.000</PredQty>
                         <QU>St</QU>
+                        <CtlgAssign>
+                          <CtlgID>CBAOAGGM</CtlgID>
+                          <CtlgCode>080</CtlgCode>
+                        </CtlgAssign>
                         <Description>
                           <STLBBau>
                             <STLBBauCtlg>
@@ -4790,15 +4794,15 @@ RQAUUUUAFFFFABRRRQAUUUUAFFFFAH//2QA=</image>
                             </OutlineText>
                           </CompleteText>
                         </Description>
-                        <CtlgAssign>
-                          <CtlgID>CBAOAGGM</CtlgID>
-                          <CtlgCode>080</CtlgCode>
-                        </CtlgAssign>
                       </Item>
                       <Item ID="CBAFCEGA" RNoPart="30">
                         <Qty>150.000</Qty>
                         <PredQty>150.000</PredQty>
                         <QU>m2</QU>
+                        <CtlgAssign>
+                          <CtlgID>CBAOAGGM</CtlgID>
+                          <CtlgCode>002</CtlgCode>
+                        </CtlgAssign>
                         <Description>
                           <STLBBau>
                             <STLBBauCtlg>
@@ -4877,15 +4881,15 @@ RQAUUUUAFFFFABRRRQAUUUUAFFFFAH//2QA=</image>
                             </OutlineText>
                           </CompleteText>
                         </Description>
-                        <CtlgAssign>
-                          <CtlgID>CBAOAGGM</CtlgID>
-                          <CtlgCode>002</CtlgCode>
-                        </CtlgAssign>
                       </Item>
                       <Item ID="CBAFCKNA" RNoPart="40">
                         <Qty>3.000</Qty>
                         <PredQty>3.000</PredQty>
                         <QU>m3</QU>
+                        <CtlgAssign>
+                          <CtlgID>CBAOAGGM</CtlgID>
+                          <CtlgCode>002</CtlgCode>
+                        </CtlgAssign>
                         <Description>
                           <STLBBau>
                             <STLBBauCtlg>
@@ -4976,10 +4980,6 @@ RQAUUUUAFFFFABRRRQAUUUUAFFFFAH//2QA=</image>
                             </OutlineText>
                           </CompleteText>
                         </Description>
-                        <CtlgAssign>
-                          <CtlgID>CBAOAGGM</CtlgID>
-                          <CtlgCode>002</CtlgCode>
-                        </CtlgAssign>
                       </Item>
                       <Item ID="CBAFDENI" RNoPart="50">
                         <Qty>300.000</Qty>
@@ -5106,6 +5106,10 @@ RQAUUUUAFFFFABRRRQAUUUUAFFFFAH//2QA=</image>
                         <Qty>20.000</Qty>
                         <PredQty>20.000</PredQty>
                         <QU>m2</QU>
+                        <CtlgAssign>
+                          <CtlgID>CBAOAGGM</CtlgID>
+                          <CtlgCode>012</CtlgCode>
+                        </CtlgAssign>
                         <Description>
                           <STLBBau>
                             <STLBBauCtlg>
@@ -5246,10 +5250,6 @@ RQAUUUUAFFFFABRRRQAUUUUAFFFFAH//2QA=</image>
                             </OutlineText>
                           </CompleteText>
                         </Description>
-                        <CtlgAssign>
-                          <CtlgID>CBAOAGGM</CtlgID>
-                          <CtlgCode>012</CtlgCode>
-                        </CtlgAssign>
                       </Item>
                     </Itemlist>
                   </BoQBody>
@@ -5515,15 +5515,62 @@ RQAUUUUAFFFFABRRRQAUUUUAFFFFAH//2QA=</image>
                   <BoQBody>
                     <Itemlist>
                       <Item ID="CBAFHBMA" RNoPart="10">
-                        <SumDescr/>
                         <Qty>2500.000</Qty>
                         <PredQty>2500.000</PredQty>
                         <QU>m2</QU>
+                        <Description>
+                          <StLNo>9703901321110104</StLNo>
+                          <CompleteText>
+                            <ComplTSA>Yes</ComplTSA>
+                            <DetailTxt>
+                              <Text>
+                                <p style="text-align:left;">
+                                  <span style="font-family:Arial;font-size:10pt;color:rgb(0,0,0);">Nichttragende innere Trennwand DIN 4103-1</span>
+                                  <br/>
+                                  <span style="font-family:Arial;font-size:10pt;color:rgb(0,0,0);">als Montagewand, Einbaubereich 1,</span>
+                                  <br/>
+                                  <span style="font-family:Arial;font-size:10pt;color:rgb(0,0,0);">Höhe bis 3,5 m,</span>
+                                  <br/>
+                                  <span style="font-family:Arial;font-size:10pt;color:rgb(0,0,0);">Dicke 100 mm,</span>
+                                </p>
+                              </Text>
+                              <TextComplement Kind="Owner" MarkLbl="22">
+                                <ComplCaption>
+                                  <span style="font-family:Arial;font-size:10pt;color:rgb(0,0,0);">bewertetes Schalldämmaß DIN 4109 Rw,R in dB </span>
+                                </ComplCaption>
+                                <ComplBody>
+                                  <span style="font-family:Arial;font-size:10pt;color:rgb(0,0,0);">'45'</span>
+                                </ComplBody>
+                                <ComplTail>
+                                  <span style="font-family:Arial;font-size:10pt;color:rgb(0,0,0);">,</span>
+                                </ComplTail>
+                              </TextComplement>
+                              <Text>
+                                <p style="text-align:left;">
+                                  <span style="font-family:Arial;font-size:10pt;color:rgb(0,0,0);">Feuerwiderstandsklasse DIN 4102-2 F 30</span>
+                                  <br/>
+                                  <span style="font-family:Arial;font-size:10pt;color:rgb(0,0,0);">- A,</span>
+                                  <br/>
+                                  <span style="font-family:Arial;font-size:10pt;color:rgb(0,0,0);">umlaufende Anschlüsse starr.</span>
+                                  <br/>
+                                  <span style="font-family:Arial;font-size:10pt;color:rgb(0,0,0);">Ausführung wie folgt:</span>
+                                </p>
+                              </Text>
+                            </DetailTxt>
+                            <OutlineText>
+                              <OutlTxt>
+                                <TextOutlTxt>
+                                  <p>
+                                    <span>Trennwand bis 3,5 m 100 mm F 30</span>
+                                  </p>
+                                </TextOutlTxt>
+                              </OutlTxt>
+                            </OutlineText>
+                          </CompleteText>
+                        </Description>
+                        <SumDescr>Yes</SumDescr>
                         <SubDescr>
                           <SubDNo>1</SubDNo>
-                          <Qty>0.000</Qty>
-                          <QtySpec>Yes</QtySpec>
-                          <QU>----</QU>
                           <Description>
                             <StLNo>970391550301</StLNo>
                             <CompleteText>
@@ -5551,12 +5598,12 @@ RQAUUUUAFFFFABRRRQAUUUUAFFFFAH//2QA=</image>
                               </OutlineText>
                             </CompleteText>
                           </Description>
+                          <QtySpec>Yes</QtySpec>
+                          <Qty>0.000</Qty>
+                          <QU>----</QU>
                         </SubDescr>
                         <SubDescr>
                           <SubDNo>2</SubDNo>
-                          <Qty>0.000</Qty>
-                          <QtySpec>Yes</QtySpec>
-                          <QU>----</QU>
                           <Description>
                             <StLNo>9703915630210131</StLNo>
                             <CompleteText>
@@ -5619,12 +5666,12 @@ RQAUUUUAFFFFABRRRQAUUUUAFFFFAH//2QA=</image>
                               </OutlineText>
                             </CompleteText>
                           </Description>
+                          <QtySpec>Yes</QtySpec>
+                          <Qty>0.000</Qty>
+                          <QU>----</QU>
                         </SubDescr>
                         <SubDescr>
                           <SubDNo>3</SubDNo>
-                          <Qty>0.000</Qty>
-                          <QtySpec>Yes</QtySpec>
-                          <QU>----</QU>
                           <Description>
                             <StLNo>9703916520030111</StLNo>
                             <CompleteText>
@@ -5658,57 +5705,10 @@ RQAUUUUAFFFFABRRRQAUUUUAFFFFAH//2QA=</image>
                               </OutlineText>
                             </CompleteText>
                           </Description>
+                          <QtySpec>Yes</QtySpec>
+                          <Qty>0.000</Qty>
+                          <QU>----</QU>
                         </SubDescr>
-                        <Description>
-                          <StLNo>9703901321110104</StLNo>
-                          <CompleteText>
-                            <ComplTSA>Yes</ComplTSA>
-                            <DetailTxt>
-                              <Text>
-                                <p style="text-align:left;">
-                                  <span style="font-family:Arial;font-size:10pt;color:rgb(0,0,0);">Nichttragende innere Trennwand DIN 4103-1</span>
-                                  <br/>
-                                  <span style="font-family:Arial;font-size:10pt;color:rgb(0,0,0);">als Montagewand, Einbaubereich 1,</span>
-                                  <br/>
-                                  <span style="font-family:Arial;font-size:10pt;color:rgb(0,0,0);">Höhe bis 3,5 m,</span>
-                                  <br/>
-                                  <span style="font-family:Arial;font-size:10pt;color:rgb(0,0,0);">Dicke 100 mm,</span>
-                                </p>
-                              </Text>
-                              <TextComplement Kind="Owner" MarkLbl="22">
-                                <ComplCaption>
-                                  <span style="font-family:Arial;font-size:10pt;color:rgb(0,0,0);">bewertetes Schalldämmaß DIN 4109 Rw,R in dB </span>
-                                </ComplCaption>
-                                <ComplBody>
-                                  <span style="font-family:Arial;font-size:10pt;color:rgb(0,0,0);">'45'</span>
-                                </ComplBody>
-                                <ComplTail>
-                                  <span style="font-family:Arial;font-size:10pt;color:rgb(0,0,0);">,</span>
-                                </ComplTail>
-                              </TextComplement>
-                              <Text>
-                                <p style="text-align:left;">
-                                  <span style="font-family:Arial;font-size:10pt;color:rgb(0,0,0);">Feuerwiderstandsklasse DIN 4102-2 F 30</span>
-                                  <br/>
-                                  <span style="font-family:Arial;font-size:10pt;color:rgb(0,0,0);">- A,</span>
-                                  <br/>
-                                  <span style="font-family:Arial;font-size:10pt;color:rgb(0,0,0);">umlaufende Anschlüsse starr.</span>
-                                  <br/>
-                                  <span style="font-family:Arial;font-size:10pt;color:rgb(0,0,0);">Ausführung wie folgt:</span>
-                                </p>
-                              </Text>
-                            </DetailTxt>
-                            <OutlineText>
-                              <OutlTxt>
-                                <TextOutlTxt>
-                                  <p>
-                                    <span>Trennwand bis 3,5 m 100 mm F 30</span>
-                                  </p>
-                                </TextOutlTxt>
-                              </OutlTxt>
-                            </OutlineText>
-                          </CompleteText>
-                        </Description>
                       </Item>
                     </Itemlist>
                   </BoQBody>
@@ -6193,7 +6193,7 @@ RQAUUUUAFFFFABRRRQAUUUUAFFFFAH//2QA=</image>
                       <Item ID="CBAFLCPI" RNoPart="10">
                         <ALNGroupNo>1</ALNGroupNo>
                         <ALNSerNo>0</ALNSerNo>
-                        <RefDescr/>
+                        <RefDescr>Ref</RefDescr>
                         <Qty>1.000</Qty>
                         <PredQty>1.000</PredQty>
                         <QU>St</QU>
@@ -6240,7 +6240,7 @@ RQAUUUUAFFFFABRRRQAUUUUAFFFFAH//2QA=</image>
                       <Item ID="CBAFLIKI" RNoPart="11">
                         <ALNGroupNo>1</ALNGroupNo>
                         <ALNSerNo>0</ALNSerNo>
-                        <RefDescr/>
+                        <RefDescr>Rep</RefDescr>
                         <RefRNo IDRef="CBAFLCPI"/>
                         <Qty>180.000</Qty>
                         <PredQty>180.000</PredQty>
@@ -6269,7 +6269,7 @@ RQAUUUUAFFFFABRRRQAUUUUAFFFFAH//2QA=</image>
                       <Item ID="CBAFLNBI" RNoPart="12">
                         <ALNGroupNo>1</ALNGroupNo>
                         <ALNSerNo>0</ALNSerNo>
-                        <RefDescr/>
+                        <RefDescr>Rep</RefDescr>
                         <RefRNo IDRef="CBAFLCPI"/>
                         <Qty>1.000</Qty>
                         <PredQty>1.000</PredQty>
@@ -6334,7 +6334,7 @@ RQAUUUUAFFFFABRRRQAUUUUAFFFFAH//2QA=</image>
                       <Item ID="CBAFMJPA" RNoPart="20">
                         <ALNGroupNo>1</ALNGroupNo>
                         <ALNSerNo>1</ALNSerNo>
-                        <RefDescr/>
+                        <RefDescr>Ref</RefDescr>
                         <Qty>1.000</Qty>
                         <PredQty>0.000</PredQty>
                         <QU>St</QU>
@@ -6438,7 +6438,7 @@ RQAUUUUAFFFFABRRRQAUUUUAFFFFAH//2QA=</image>
                       <Item ID="CBAFNBGI" RNoPart="21">
                         <ALNGroupNo>1</ALNGroupNo>
                         <ALNSerNo>1</ALNSerNo>
-                        <RefDescr/>
+                        <RefDescr>Rep</RefDescr>
                         <RefRNo IDRef="CBAFMJPA"/>
                         <Qty>1.000</Qty>
                         <PredQty>1.000</PredQty>
@@ -6467,7 +6467,7 @@ RQAUUUUAFFFFABRRRQAUUUUAFFFFAH//2QA=</image>
                       <Item ID="CBAFNGBI" RNoPart="22">
                         <ALNGroupNo>1</ALNGroupNo>
                         <ALNSerNo>1</ALNSerNo>
-                        <RefDescr/>
+                        <RefDescr>Rep</RefDescr>
                         <RefRNo IDRef="CBAFMJPA"/>
                         <Qty>1.000</Qty>
                         <PredQty>1.000</PredQty>
@@ -6702,6 +6702,10 @@ RQAUUUUAFFFFABRRRQAUUUUAFFFFAH//2QA=</image>
                         <Qty>12345678.012</Qty>
                         <PredQty>12345678.012</PredQty>
                         <QU>Stck</QU>
+                        <CtlgAssign>
+                          <CtlgID>CANKDEDI</CtlgID>
+                          <CtlgCode>331</CtlgCode>
+                        </CtlgAssign>
                         <Description>
                           <CompleteText>
                             <DetailTxt>
@@ -6722,16 +6726,16 @@ RQAUUUUAFFFFABRRRQAUUUUAFFFFAH//2QA=</image>
                             </OutlineText>
                           </CompleteText>
                         </Description>
-                        <CtlgAssign>
-                          <CtlgID>CANKDEDI</CtlgID>
-                          <CtlgCode>331</CtlgCode>
-                        </CtlgAssign>
                       </Item>
                       <Item ID="CBHMAAAA" RNoPart="20">
                         <Provis>WithTotal</Provis>
                         <Qty>16.000</Qty>
                         <PredQty>16.000</PredQty>
                         <QU>Std</QU>
+                        <CtlgAssign>
+                          <CtlgID>CANKDEDI</CtlgID>
+                          <CtlgCode>332</CtlgCode>
+                        </CtlgAssign>
                         <Description>
                           <CompleteText>
                             <DetailTxt>
@@ -6766,15 +6770,15 @@ RQAUUUUAFFFFABRRRQAUUUUAFFFFAH//2QA=</image>
                             </OutlineText>
                           </CompleteText>
                         </Description>
-                        <CtlgAssign>
-                          <CtlgID>CANKDEDI</CtlgID>
-                          <CtlgCode>332</CtlgCode>
-                        </CtlgAssign>
                       </Item>
                       <Item ID="CBHMAGNA" RNoPart="30">
                         <Qty>2.000</Qty>
                         <PredQty>2.000</PredQty>
                         <QU>Stck</QU>
+                        <CtlgAssign>
+                          <CtlgID>CANKDEDI</CtlgID>
+                          <CtlgCode>334</CtlgCode>
+                        </CtlgAssign>
                         <Description>
                           <CompleteText>
                             <DetailTxt>
@@ -6798,10 +6802,6 @@ RQAUUUUAFFFFABRRRQAUUUUAFFFFAH//2QA=</image>
                             </OutlineText>
                           </CompleteText>
                         </Description>
-                        <CtlgAssign>
-                          <CtlgID>CANKDEDI</CtlgID>
-                          <CtlgCode>334</CtlgCode>
-                        </CtlgAssign>
                       </Item>
                     </Itemlist>
                   </BoQBody>
@@ -6822,6 +6822,22 @@ RQAUUUUAFFFFABRRRQAUUUUAFFFFAH//2QA=</image>
                         <QtyTBD>Yes</QtyTBD>
                         <PredQty>10.000</PredQty>
                         <QU>m</QU>
+                        <CtlgAssign>
+                          <CtlgID>CBAOAGGM</CtlgID>
+                          <CtlgCode>012</CtlgCode>
+                        </CtlgAssign>
+                        <CtlgAssign>
+                          <CtlgID>CAPKAAAM</CtlgID>
+                          <CtlgCode>H1</CtlgCode>
+                        </CtlgAssign>
+                        <CtlgAssign>
+                          <CtlgID>CANKDEDI</CtlgID>
+                          <CtlgCode>310</CtlgCode>
+                        </CtlgAssign>
+                        <CtlgAssign>
+                          <CtlgID>CALPFIAI</CtlgID>
+                          <CtlgCode>Bund</CtlgCode>
+                        </CtlgAssign>
                         <Description>
                           <CompleteText>
                             <DetailTxt>
@@ -6895,27 +6911,9 @@ RQAUUUUAFFFFABRRRQAUUUUAFFFFAH//2QA=</image>
                             </OutlineText>
                           </CompleteText>
                         </Description>
-                        <CtlgAssign>
-                          <CtlgID>CBAOAGGM</CtlgID>
-                          <CtlgCode>012</CtlgCode>
-                        </CtlgAssign>
-                        <CtlgAssign>
-                          <CtlgID>CAPKAAAM</CtlgID>
-                          <CtlgCode>H1</CtlgCode>
-                        </CtlgAssign>
-                        <CtlgAssign>
-                          <CtlgID>CANKDEDI</CtlgID>
-                          <CtlgCode>310</CtlgCode>
-                        </CtlgAssign>
-                        <CtlgAssign>
-                          <CtlgID>CALPFIAI</CtlgID>
-                          <CtlgCode>Bund</CtlgCode>
-                        </CtlgAssign>
                       </Item>
                       <Item ID="CBHMBGAI" RNoPart="20">
                         <Qty>100.000</Qty>
-                        <PredQty>100.000</PredQty>
-                        <QU>m</QU>
                         <QtySplit>
                           <Qty>10.000</Qty>
                           <CtlgAssign>
@@ -6976,6 +6974,12 @@ RQAUUUUAFFFFABRRRQAUUUUAFFFFAH//2QA=</image>
                             <CtlgCode>Land</CtlgCode>
                           </CtlgAssign>
                         </QtySplit>
+                        <PredQty>100.000</PredQty>
+                        <QU>m</QU>
+                        <CtlgAssign>
+                          <CtlgID>CBAOAGGM</CtlgID>
+                          <CtlgCode>012</CtlgCode>
+                        </CtlgAssign>
                         <Description>
                           <CompleteText>
                             <DetailTxt>
@@ -7040,10 +7044,6 @@ RQAUUUUAFFFFABRRRQAUUUUAFFFFAH//2QA=</image>
                             </OutlineText>
                           </CompleteText>
                         </Description>
-                        <CtlgAssign>
-                          <CtlgID>CBAOAGGM</CtlgID>
-                          <CtlgCode>012</CtlgCode>
-                        </CtlgAssign>
                       </Item>
                     </Itemlist>
                   </BoQBody>
@@ -7065,6 +7065,22 @@ RQAUUUUAFFFFABRRRQAUUUUAFFFFAH//2QA=</image>
                         <QtyTBD>Yes</QtyTBD>
                         <PredQty>10.000</PredQty>
                         <QU>m</QU>
+                        <CtlgAssign>
+                          <CtlgID>CBAOAGGM</CtlgID>
+                          <CtlgCode>012</CtlgCode>
+                        </CtlgAssign>
+                        <CtlgAssign>
+                          <CtlgID>CAPKAAAM</CtlgID>
+                          <CtlgCode>H1</CtlgCode>
+                        </CtlgAssign>
+                        <CtlgAssign>
+                          <CtlgID>CANKDEDI</CtlgID>
+                          <CtlgCode>310</CtlgCode>
+                        </CtlgAssign>
+                        <CtlgAssign>
+                          <CtlgID>CALPFIAI</CtlgID>
+                          <CtlgCode>Bund</CtlgCode>
+                        </CtlgAssign>
                         <Description>
                           <CompleteText>
                             <DetailTxt>
@@ -7085,28 +7101,10 @@ RQAUUUUAFFFFABRRRQAUUUUAFFFFAH//2QA=</image>
                             </OutlineText>
                           </CompleteText>
                         </Description>
-                        <CtlgAssign>
-                          <CtlgID>CBAOAGGM</CtlgID>
-                          <CtlgCode>012</CtlgCode>
-                        </CtlgAssign>
-                        <CtlgAssign>
-                          <CtlgID>CAPKAAAM</CtlgID>
-                          <CtlgCode>H1</CtlgCode>
-                        </CtlgAssign>
-                        <CtlgAssign>
-                          <CtlgID>CANKDEDI</CtlgID>
-                          <CtlgCode>310</CtlgCode>
-                        </CtlgAssign>
-                        <CtlgAssign>
-                          <CtlgID>CALPFIAI</CtlgID>
-                          <CtlgCode>Bund</CtlgCode>
-                        </CtlgAssign>
                       </Item>
                       <Item ID="CBHMHGMI" RNoPart="20">
                         <Provis>WithTotal</Provis>
                         <Qty>100.000</Qty>
-                        <PredQty>100.000</PredQty>
-                        <QU>m</QU>
                         <QtySplit>
                           <Qty>50.000</Qty>
                           <CtlgAssign>
@@ -7121,6 +7119,12 @@ RQAUUUUAFFFFABRRRQAUUUUAFFFFAH//2QA=</image>
                             <CtlgCode>320</CtlgCode>
                           </CtlgAssign>
                         </QtySplit>
+                        <PredQty>100.000</PredQty>
+                        <QU>m</QU>
+                        <CtlgAssign>
+                          <CtlgID>CBAOAGGM</CtlgID>
+                          <CtlgCode>012</CtlgCode>
+                        </CtlgAssign>
                         <Description>
                           <CompleteText>
                             <DetailTxt>
@@ -7141,17 +7145,17 @@ RQAUUUUAFFFFABRRRQAUUUUAFFFFAH//2QA=</image>
                             </OutlineText>
                           </CompleteText>
                         </Description>
+                      </Item>
+                      <Item ID="CBHMHNEI" RNoPart="30">
+                        <NotAppl>Yes</NotAppl>
+                        <HourIt>Yes</HourIt>
+                        <QtyTBD>Yes</QtyTBD>
+                        <PredQty>126.646</PredQty>
+                        <QU>m</QU>
                         <CtlgAssign>
                           <CtlgID>CBAOAGGM</CtlgID>
                           <CtlgCode>012</CtlgCode>
                         </CtlgAssign>
-                      </Item>
-                      <Item ID="CBHMHNEI" RNoPart="30">
-                        <QtyTBD>Yes</QtyTBD>
-                        <PredQty>126.646</PredQty>
-                        <QU>m</QU>
-                        <NotAppl>Yes</NotAppl>
-                        <HourIt>Yes</HourIt>
                         <Description>
                           <CompleteText>
                             <DetailTxt>
@@ -7172,10 +7176,6 @@ RQAUUUUAFFFFABRRRQAUUUUAFFFFAH//2QA=</image>
                             </OutlineText>
                           </CompleteText>
                         </Description>
-                        <CtlgAssign>
-                          <CtlgID>CBAOAGGM</CtlgID>
-                          <CtlgCode>012</CtlgCode>
-                        </CtlgAssign>
                       </Item>
                     </Itemlist>
                   </BoQBody>
@@ -7193,10 +7193,14 @@ RQAUUUUAFFFFABRRRQAUUUUAFFFFAH//2QA=</image>
               <BoQBody>
                 <Itemlist>
                   <Item ID="CBHMIKNI" RNoPart="10">
-                    <RefDescr/>
+                    <RefDescr>Ref</RefDescr>
                     <Qty>20.000</Qty>
                     <PredQty>20.000</PredQty>
                     <QU>m3</QU>
+                    <CtlgAssign>
+                      <CtlgID>CBAOAGGM</CtlgID>
+                      <CtlgCode>002</CtlgCode>
+                    </CtlgAssign>
                     <Description>
                       <STLBBau>
                         <STLBBauCtlg>
@@ -7296,13 +7300,9 @@ RQAUUUUAFFFFABRRRQAUUUUAFFFFAH//2QA=</image>
                         </OutlineText>
                       </CompleteText>
                     </Description>
-                    <CtlgAssign>
-                      <CtlgID>CBAOAGGM</CtlgID>
-                      <CtlgCode>002</CtlgCode>
-                    </CtlgAssign>
                   </Item>
                   <Item ID="CBHMJCLI" RNoPart="20">
-                    <RefDescr/>
+                    <RefDescr>Rep</RefDescr>
                     <RefRNo IDRef="CBHMIKNI"/>
                     <Qty>150.000</Qty>
                     <PredQty>150.000</PredQty>
@@ -7332,7 +7332,7 @@ RQAUUUUAFFFFABRRRQAUUUUAFFFFAH//2QA=</image>
                     </Description>
                   </Item>
                   <Item ID="CBHMJHKA" RNoPart="40">
-                    <RefDescr/>
+                    <RefDescr>Rep</RefDescr>
                     <RefRNo IDRef="CBHMIKNI"/>
                     <Qty>50.000</Qty>
                     <PredQty>50.000</PredQty>
@@ -7365,6 +7365,10 @@ RQAUUUUAFFFFABRRRQAUUUUAFFFFAH//2QA=</image>
                     <Qty>12.000</Qty>
                     <PredQty>12.000</PredQty>
                     <QU>Stk</QU>
+                    <CtlgAssign>
+                      <CtlgID>CBAOAGGM</CtlgID>
+                      <CtlgCode>002</CtlgCode>
+                    </CtlgAssign>
                     <Description>
                       <CompleteText>
                         <DetailTxt>
@@ -7391,10 +7395,6 @@ RQAUUUUAFFFFABRRRQAUUUUAFFFFAH//2QA=</image>
                         </OutlineText>
                       </CompleteText>
                     </Description>
-                    <CtlgAssign>
-                      <CtlgID>CBAOAGGM</CtlgID>
-                      <CtlgCode>002</CtlgCode>
-                    </CtlgAssign>
                   </Item>
                 </Itemlist>
               </BoQBody>
@@ -7845,6 +7845,10 @@ RQAUUUUAFFFFABRRRQAUUUUAFFFFAH//2QA=</image>
                         <Qty>10.000</Qty>
                         <PredQty>10.000</PredQty>
                         <QU>m2</QU>
+                        <CtlgAssign>
+                          <CtlgID>CBAOAGGM</CtlgID>
+                          <CtlgCode>080</CtlgCode>
+                        </CtlgAssign>
                         <Description>
                           <STLBBau>
                             <STLBBauCtlg>
@@ -7964,15 +7968,15 @@ RQAUUUUAFFFFABRRRQAUUUUAFFFFAH//2QA=</image>
                             </OutlineText>
                           </CompleteText>
                         </Description>
-                        <CtlgAssign>
-                          <CtlgID>CBAOAGGM</CtlgID>
-                          <CtlgCode>080</CtlgCode>
-                        </CtlgAssign>
                       </Item>
                       <Item ID="CBBGBDDA" RNoPart="20">
                         <Qty>300.000</Qty>
                         <PredQty>300.000</PredQty>
                         <QU>m2</QU>
+                        <CtlgAssign>
+                          <CtlgID>CBAOAGGM</CtlgID>
+                          <CtlgCode>080</CtlgCode>
+                        </CtlgAssign>
                         <Description>
                           <STLBBau>
                             <STLBBauCtlg>
@@ -8070,10 +8074,6 @@ RQAUUUUAFFFFABRRRQAUUUUAFFFFAH//2QA=</image>
                             </OutlineText>
                           </CompleteText>
                         </Description>
-                        <CtlgAssign>
-                          <CtlgID>CBAOAGGM</CtlgID>
-                          <CtlgCode>080</CtlgCode>
-                        </CtlgAssign>
                       </Item>
                       <Item ID="CBBGBKJI" RNoPart="20">
                         <Qty>100.000</Qty>
@@ -8101,10 +8101,10 @@ RQAUUUUAFFFFABRRRQAUUUUAFFFFAH//2QA=</image>
                         </Description>
                       </Item>
                       <Item ID="CBBGBOPI" RNoPart="30">
+                        <LumpSumItem>Yes</LumpSumItem>
                         <Qty>1.000</Qty>
                         <PredQty>1.000</PredQty>
                         <QU>psch</QU>
-                        <LumpSumItem>Yes</LumpSumItem>
                         <Description>
                           <CompleteText>
                             <DetailTxt>
@@ -8930,6 +8930,10 @@ xim29Elskf/ZAA==</image>
                         <Qty>1.000</Qty>
                         <PredQty>1.000</PredQty>
                         <QU>Stck</QU>
+                        <CtlgAssign>
+                          <CtlgID>CBAOAGGM</CtlgID>
+                          <CtlgCode>001</CtlgCode>
+                        </CtlgAssign>
                         <Description>
                           <STLBBau>
                             <STLBBauCtlg>
@@ -9661,15 +9665,15 @@ xim29Elskf/ZAA==</image>
                             </OutlineText>
                           </CompleteText>
                         </Description>
-                        <CtlgAssign>
-                          <CtlgID>CBAOAGGM</CtlgID>
-                          <CtlgCode>001</CtlgCode>
-                        </CtlgAssign>
                       </Item>
                       <Item ID="CBBGHIIA" RNoPart="50">
                         <Qty>1.000</Qty>
                         <PredQty>1.000</PredQty>
                         <QU>Stck</QU>
+                        <CtlgAssign>
+                          <CtlgID>CBAOAGGM</CtlgID>
+                          <CtlgCode>001</CtlgCode>
+                        </CtlgAssign>
                         <Description>
                           <STLBBau>
                             <STLBBauCtlg>
@@ -9828,15 +9832,15 @@ UZzWGx1H2sYOlV56U5wl/9kA
                             </OutlineText>
                           </CompleteText>
                         </Description>
-                        <CtlgAssign>
-                          <CtlgID>CBAOAGGM</CtlgID>
-                          <CtlgCode>001</CtlgCode>
-                        </CtlgAssign>
                       </Item>
                       <Item ID="CBBGIDPI" RNoPart="60">
                         <Qty>1.000</Qty>
                         <PredQty>1.000</PredQty>
                         <QU>Stck</QU>
+                        <CtlgAssign>
+                          <CtlgID>CBAOAGGM</CtlgID>
+                          <CtlgCode>001</CtlgCode>
+                        </CtlgAssign>
                         <Description>
                           <STLBBau>
                             <STLBBauCtlg>
@@ -10122,15 +10126,15 @@ ZTlCVNyVHFZjXoSfJOSXPSla91aSTXxHiP8AtAPpc+LXBWfeHniB4uVM94P4mw1LB55lFPgfw2yZ
                             </OutlineText>
                           </CompleteText>
                         </Description>
-                        <CtlgAssign>
-                          <CtlgID>CBAOAGGM</CtlgID>
-                          <CtlgCode>001</CtlgCode>
-                        </CtlgAssign>
                       </Item>
                       <Item ID="CBBGJBJI" RNoPart="70">
                         <Qty>1.000</Qty>
                         <PredQty>1.000</PredQty>
                         <QU>Stck</QU>
+                        <CtlgAssign>
+                          <CtlgID>CBAOAGGM</CtlgID>
+                          <CtlgCode>001</CtlgCode>
+                        </CtlgAssign>
                         <Description>
                           <STLBBau>
                             <STLBBauCtlg>
@@ -10414,15 +10418,15 @@ lK17q0kmviPEf9oB9Lnxa4Kz7w88QPFypnvB/E2GpYPPMop8D+G2TPH4ajiqGNp0ZZjkPB2V5rQh
                             </OutlineText>
                           </CompleteText>
                         </Description>
-                        <CtlgAssign>
-                          <CtlgID>CBAOAGGM</CtlgID>
-                          <CtlgCode>001</CtlgCode>
-                        </CtlgAssign>
                       </Item>
                       <Item ID="CBBGKACI" RNoPart="80">
                         <Qty>1.000</Qty>
                         <PredQty>1.000</PredQty>
                         <QU>Stck</QU>
+                        <CtlgAssign>
+                          <CtlgID>CBAOAGGM</CtlgID>
+                          <CtlgCode>001</CtlgCode>
+                        </CtlgAssign>
                         <Description>
                           <CompleteText>
                             <DetailTxt>
@@ -11056,10 +11060,6 @@ LlTPeD+JsNSweeZRT4H8NsmePw1HFUMbToyzHIeDsrzWhD6zhqM5rDY6j7WMHSq89Kc4S//Zjw==</im
                             </OutlineText>
                           </CompleteText>
                         </Description>
-                        <CtlgAssign>
-                          <CtlgID>CBAOAGGM</CtlgID>
-                          <CtlgCode>001</CtlgCode>
-                        </CtlgAssign>
                       </Item>
                     </Itemlist>
                   </BoQBody>
@@ -11073,10 +11073,10 @@ LlTPeD+JsNSweeZRT4H8NsmePw1HFUMbToyzHIeDsrzWhD6zhqM5rDY6j7WMHSq89Kc4S//Zjw==</im
                   <BoQBody>
                     <Itemlist>
                       <Item ID="CBBGLIII" RNoPart="10">
+                        <LumpSumItem>Yes</LumpSumItem>
                         <Qty>1.000</Qty>
                         <PredQty>1.000</PredQty>
                         <QU>psch</QU>
-                        <LumpSumItem>Yes</LumpSumItem>
                         <Description>
                           <CompleteText>
                             <DetailTxt>
@@ -11556,6 +11556,14 @@ LlTPeD+JsNSweeZRT4H8NsmePw1HFUMbToyzHIeDsrzWhD6zhqM5rDY6j7WMHSq89Kc4S//Zjw==</im
                         <Qty>2.000</Qty>
                         <PredQty>2.000</PredQty>
                         <QU>St</QU>
+                        <CtlgAssign>
+                          <CtlgID>CBAOAGGM</CtlgID>
+                          <CtlgCode>032</CtlgCode>
+                        </CtlgAssign>
+                        <CtlgAssign>
+                          <CtlgID>CANKDEDI</CtlgID>
+                          <CtlgCode>344</CtlgCode>
+                        </CtlgAssign>
                         <Description>
                           <STLBBau>
                             <STLBBauCtlg>
@@ -11707,14 +11715,6 @@ LlTPeD+JsNSweeZRT4H8NsmePw1HFUMbToyzHIeDsrzWhD6zhqM5rDY6j7WMHSq89Kc4S//Zjw==</im
                             </OutlineText>
                           </CompleteText>
                         </Description>
-                        <CtlgAssign>
-                          <CtlgID>CBAOAGGM</CtlgID>
-                          <CtlgCode>032</CtlgCode>
-                        </CtlgAssign>
-                        <CtlgAssign>
-                          <CtlgID>CANKDEDI</CtlgID>
-                          <CtlgCode>344</CtlgCode>
-                        </CtlgAssign>
                       </Item>
                       <Item ID="CBBGOJNA" RNoPart="20">
                         <Qty>3.000</Qty>
@@ -11842,10 +11842,10 @@ LlTPeD+JsNSweeZRT4H8NsmePw1HFUMbToyzHIeDsrzWhD6zhqM5rDY6j7WMHSq89Kc4S//Zjw==</im
                 </Description>
               </Remark>
               <Item ID="CADAAHDI" RNoPart="10">
+                <HourIt>Yes</HourIt>
                 <Qty>100.000</Qty>
                 <PredQty>100.000</PredQty>
                 <QU>Std</QU>
-                <HourIt>Yes</HourIt>
                 <Description>
                   <CompleteText>
                     <DetailTxt>
@@ -11868,10 +11868,10 @@ LlTPeD+JsNSweeZRT4H8NsmePw1HFUMbToyzHIeDsrzWhD6zhqM5rDY6j7WMHSq89Kc4S//Zjw==</im
                 </Description>
               </Item>
               <Item ID="CADAALHA" RNoPart="20">
+                <HourIt>Yes</HourIt>
                 <Qty>100.000</Qty>
                 <PredQty>100.000</PredQty>
                 <QU>Std</QU>
-                <HourIt>Yes</HourIt>
                 <Description>
                   <CompleteText>
                     <DetailTxt>
@@ -11894,10 +11894,10 @@ LlTPeD+JsNSweeZRT4H8NsmePw1HFUMbToyzHIeDsrzWhD6zhqM5rDY6j7WMHSq89Kc4S//Zjw==</im
                 </Description>
               </Item>
               <Item ID="CADABAAA" RNoPart="30">
+                <HourIt>Yes</HourIt>
                 <Qty>100.000</Qty>
                 <PredQty>100.000</PredQty>
                 <QU>Std</QU>
-                <HourIt>Yes</HourIt>
                 <Description>
                   <CompleteText>
                     <DetailTxt>
@@ -11921,10 +11921,10 @@ LlTPeD+JsNSweeZRT4H8NsmePw1HFUMbToyzHIeDsrzWhD6zhqM5rDY6j7WMHSq89Kc4S//Zjw==</im
               </Item>
               <Item ID="CADABEFA" RNoPart="40">
                 <Provis>WithTotal</Provis>
+                <HourIt>Yes</HourIt>
                 <Qty>100.000</Qty>
                 <PredQty>100.000</PredQty>
                 <QU>Std</QU>
-                <HourIt>Yes</HourIt>
                 <Description>
                   <CompleteText>
                     <DetailTxt>

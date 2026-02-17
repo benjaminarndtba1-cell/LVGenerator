@@ -193,7 +193,9 @@ class GAEBWriter:
             self._sub(bi, "NoUPComps", ns, str(info.no_up_comps))
         for i in range(1, 7):
             if i in info.up_comp_labels:
-                self._sub(bi, f"LblUPComp{i}", ns, info.up_comp_labels[i])
+                lbl_elem = self._sub(bi, f"LblUPComp{i}", ns, info.up_comp_labels[i])
+                if i in info.up_comp_types:
+                    lbl_elem.set("Type", info.up_comp_types[i])
 
         rules = get_rules(phase)
         if rules.has_totals and info.totals:
@@ -300,6 +302,7 @@ class GAEBWriter:
 
     def _write_item(self, parent: etree._Element, item: Item,
                     phase: GAEBPhase, ns: str) -> None:
+        """Write an Item element with children in XSD-conformant order."""
         rules = get_rules(phase)
         item_elem = self._sub(parent, "Item", ns)
         item_id = item.id or str(uuid.uuid4())
@@ -307,19 +310,50 @@ class GAEBWriter:
         if item.rno_part:
             item_elem.set("RNoPart", item.rno_part)
 
-        # Positionstypen
-        if item.provis:
-            self._sub(item_elem, "Provis", ns, item.provis)
+        # --- XSD sequence order ---
+        # 1. ALNGroupNo, ALNSerNo
         if item.aln_group_no:
             self._sub(item_elem, "ALNGroupNo", ns, item.aln_group_no)
         if item.aln_ser_no:
             self._sub(item_elem, "ALNSerNo", ns, item.aln_ser_no)
-        if item.free_qty:
-            self._sub(item_elem, "FreeQty", ns, "Yes")
+
+        # 2. Provis
+        if item.provis:
+            self._sub(item_elem, "Provis", ns, item.provis)
+
+        # 3. LumpSumItem
+        if item.lump_sum_item:
+            self._sub(item_elem, "LumpSumItem", ns, "Yes")
+
+        # 4. NotAppl
+        if item.not_appl:
+            self._sub(item_elem, "NotAppl", ns, "Yes")
+
+        # 5. NotOffered
+        if rules.allows_not_offered and item.not_offered:
+            self._sub(item_elem, "NotOffered", ns, "Yes")
+
+        # 6. HourIt
+        if item.hour_it:
+            self._sub(item_elem, "HourIt", ns, "Yes")
+
+        # 7. KeyIt
         if item.key_it:
             self._sub(item_elem, "KeyIt", ns, "Yes")
 
-        # Zuschlag
+        # 8. FreeQty
+        if item.free_qty:
+            self._sub(item_elem, "FreeQty", ns, "Yes")
+
+        # 9. UPBkdn (value must be "Yes" or "No")
+        if item.up_bkdn:
+            self._sub(item_elem, "UPBkdn", ns, "Yes")
+
+        # 10. MarkupIt
+        if item.markup_it:
+            self._sub(item_elem, "MarkupIt", ns, "Yes")
+
+        # 11. Zuschlag (AddPlIT)
         if item.surcharge_type:
             add_pl_it = self._sub(item_elem, "AddPlIT", ns)
             self._sub(add_pl_it, "SurchargeType", ns, item.surcharge_type)
@@ -327,12 +361,11 @@ class GAEBWriter:
                 grp = self._sub(add_pl_it, "AddPlITGrp", ns)
                 self._sub(grp, "RNoPart", ns, ref)
 
-        if item.markup_it:
-            self._sub(item_elem, "MarkupIt", ns, "Yes")
-
-        # Bezugspositionen
+        # 12. RefDescr (value must be "Ref" or "Rep")
         if item.ref_descr:
-            self._sub(item_elem, "RefDescr", ns)
+            self._sub(item_elem, "RefDescr", ns, item.ref_descr)
+
+        # 13. RefRNo / RefPerfNo
         if item.ref_rno or item.ref_rno_idref:
             el = self._sub(item_elem, "RefRNo", ns, item.ref_rno or None)
             if item.ref_rno_idref:
@@ -341,45 +374,15 @@ class GAEBWriter:
             el = self._sub(item_elem, "RefPerfNo", ns, item.ref_perf_no or None)
             if item.ref_perf_no_idref:
                 el.set("IDRef", item.ref_perf_no_idref)
-        if item.sum_descr:
-            self._sub(item_elem, "SumDescr", ns)
 
+        # 14. QtyTBD / Qty
         effective_qty = item.get_effective_qty()
-        if effective_qty is not None:
-            self._sub(item_elem, "Qty", ns, str(effective_qty))
         if item.qty_tbd:
             self._sub(item_elem, "QtyTBD", ns, "Yes")
-        if item.pred_qty is not None:
-            self._sub(item_elem, "PredQty", ns, str(item.pred_qty))
-        if item.qu:
-            self._sub(item_elem, "QU", ns, item.qu)
+        if effective_qty is not None:
+            self._sub(item_elem, "Qty", ns, str(effective_qty))
 
-        if rules.has_prices:
-            if item.up is not None:
-                self._sub(item_elem, "UP", ns, str(item.up))
-            for i in range(1, 7):
-                if i in item.up_components:
-                    self._sub(item_elem, f"UPComp{i}", ns, str(item.up_components[i]))
-            if item.up_bkdn:
-                self._sub(item_elem, "UPBkdn", ns)
-            if item.discount_pcnt is not None:
-                self._sub(item_elem, "DiscountPcnt", ns, str(item.discount_pcnt))
-
-        if rules.has_totals and item.it is not None:
-            self._sub(item_elem, "IT", ns, str(item.it))
-
-        if item.vat is not None:
-            self._sub(item_elem, "VAT", ns, str(item.vat))
-        if item.not_appl:
-            self._sub(item_elem, "NotAppl", ns, "Yes")
-        if rules.allows_not_offered and item.not_offered:
-            self._sub(item_elem, "NotOffered", ns, "Yes")
-        if item.hour_it:
-            self._sub(item_elem, "HourIt", ns, "Yes")
-        if item.lump_sum_item:
-            self._sub(item_elem, "LumpSumItem", ns, "Yes")
-
-        # Mengensplit
+        # 15. QtySplit
         for split in item.qty_splits:
             qs = self._sub(item_elem, "QtySplit", ns)
             if "qty" in split:
@@ -391,29 +394,20 @@ class GAEBWriter:
                     if assign.get("ctlg_code"):
                         self._sub(ca, "CtlgCode", ns, assign["ctlg_code"])
             elif "ctlg_id" in split:
-                # Legacy format fallback
                 ca = self._sub(qs, "CtlgAssign", ns)
                 self._sub(ca, "CtlgID", ns, split["ctlg_id"])
                 if "ctlg_code" in split:
                     self._sub(ca, "CtlgCode", ns, split["ctlg_code"])
 
-        # Unterbeschreibungen
-        for sd in item.sub_descriptions:
-            sd_elem = self._sub(item_elem, "SubDescr", ns)
-            if sd.sub_d_no:
-                self._sub(sd_elem, "SubDNo", ns, sd.sub_d_no)
-            if sd.qty is not None:
-                self._sub(sd_elem, "Qty", ns, str(sd.qty))
-            if sd.qty_spec:
-                self._sub(sd_elem, "QtySpec", ns, sd.qty_spec)
-            if sd.qu:
-                self._sub(sd_elem, "QU", ns, sd.qu)
-            if sd.description is not None:
-                self._write_description(sd_elem, sd.description, ns)
+        # 16. PredQty
+        if item.pred_qty is not None:
+            self._sub(item_elem, "PredQty", ns, str(item.pred_qty))
 
-        self._write_description(item_elem, item.description, ns)
+        # 17. QU
+        if item.qu:
+            self._sub(item_elem, "QU", ns, item.qu)
 
-        # Katalogzuordnungen
+        # 18. CtlgAssign (before UP!)
         for ca in item.ctlg_assignments:
             ca_elem = self._sub(item_elem, "CtlgAssign", ns)
             if ca.ctlg_id:
@@ -421,10 +415,28 @@ class GAEBWriter:
             if ca.ctlg_code:
                 self._sub(ca_elem, "CtlgCode", ns, ca.ctlg_code)
 
-        # Zusatztexte
-        self._write_add_texts(item_elem, item.add_texts, ns)
+        # 19. UP, UPComp1-6, DiscountPcnt
+        if rules.has_prices:
+            if item.up is not None:
+                self._sub(item_elem, "UP", ns, str(item.up))
+            for i in range(1, 7):
+                if i in item.up_components:
+                    self._sub(item_elem, f"UPComp{i}", ns, str(item.up_components[i]))
+            if item.discount_pcnt is not None:
+                self._sub(item_elem, "DiscountPcnt", ns, str(item.discount_pcnt))
 
-        # Bieterkommentare und Textergaenzungen (nur X84)
+        # 20. IT
+        if rules.has_totals and item.it is not None:
+            self._sub(item_elem, "IT", ns, str(item.it))
+
+        # 21. VAT
+        if item.vat is not None:
+            self._sub(item_elem, "VAT", ns, str(item.vat))
+
+        # 22. Description
+        self._write_description(item_elem, item.description, ns)
+
+        # 23. BidComm, TextCompl (nach Description)
         if rules.has_bid_comments:
             for comment in item.bid_comments:
                 bc = self._sub(item_elem, "BidComm", ns)
@@ -441,9 +453,30 @@ class GAEBWriter:
                     span = etree.SubElement(p, f"{{{ns}}}span")
                     span.text = line
 
+        # 24. SumDescr (nach Description, value must be "Yes")
+        if item.sum_descr:
+            self._sub(item_elem, "SumDescr", ns, "Yes")
+
+        # 25. SubDescr (nach SumDescr, XSD order: SubDNo, Description, QtySpec, Qty, QU)
+        for sd in item.sub_descriptions:
+            sd_elem = self._sub(item_elem, "SubDescr", ns)
+            if sd.sub_d_no:
+                self._sub(sd_elem, "SubDNo", ns, sd.sub_d_no)
+            if sd.description is not None:
+                self._write_description(sd_elem, sd.description, ns)
+            if sd.qty_spec:
+                self._sub(sd_elem, "QtySpec", ns, sd.qty_spec)
+            if sd.qty is not None:
+                self._sub(sd_elem, "Qty", ns, str(sd.qty))
+            if sd.qu:
+                self._sub(sd_elem, "QU", ns, sd.qu)
+
+        # 26. Zusatztexte
+        self._write_add_texts(item_elem, item.add_texts, ns)
+
     def _write_markup_item(self, parent: etree._Element, item: Item,
                            phase: GAEBPhase, ns: str) -> None:
-        """Write a MarkupItem (Zuschlagsposition) element."""
+        """Write a MarkupItem (Zuschlagsposition) element in XSD-conformant order."""
         rules = get_rules(phase)
         mi_elem = self._sub(parent, "MarkupItem", ns)
         mi_id = item.id or str(uuid.uuid4())
@@ -451,18 +484,10 @@ class GAEBWriter:
         if item.rno_part:
             mi_elem.set("RNoPart", item.rno_part)
 
-        if item.markup_type:
-            self._sub(mi_elem, "MarkupType", ns, item.markup_type)
-
-        if item.markup_sub_qty_refs:
-            msq = self._sub(mi_elem, "MarkupSubQty", ns)
-            for ref_id in item.markup_sub_qty_refs:
-                ref_elem = self._sub(msq, "RefItem", ns)
-                ref_elem.set("IDRef", ref_id)
-
-        # Bezugspositionen
+        # --- XSD sequence order for MarkupItem ---
+        # 1. RefDescr (value must be "Ref" or "Rep")
         if item.ref_descr:
-            self._sub(mi_elem, "RefDescr", ns)
+            self._sub(mi_elem, "RefDescr", ns, item.ref_descr)
         if item.ref_rno or item.ref_rno_idref:
             el = self._sub(mi_elem, "RefRNo", ns, item.ref_rno or None)
             if item.ref_rno_idref:
@@ -472,6 +497,18 @@ class GAEBWriter:
             if item.ref_perf_no_idref:
                 el.set("IDRef", item.ref_perf_no_idref)
 
+        # 2. MarkupType
+        if item.markup_type:
+            self._sub(mi_elem, "MarkupType", ns, item.markup_type)
+
+        # 3. MarkupSubQty
+        if item.markup_sub_qty_refs:
+            msq = self._sub(mi_elem, "MarkupSubQty", ns)
+            for ref_id in item.markup_sub_qty_refs:
+                ref_elem = self._sub(msq, "RefItem", ns)
+                ref_elem.set("IDRef", ref_id)
+
+        # 4. Qty, PredQty, QU
         effective_qty = item.get_effective_qty()
         if effective_qty is not None:
             self._sub(mi_elem, "Qty", ns, str(effective_qty))
@@ -480,18 +517,26 @@ class GAEBWriter:
         if item.qu:
             self._sub(mi_elem, "QU", ns, item.qu)
 
+        # 5. ITMarkup
         if item.it_markup is not None:
             self._sub(mi_elem, "ITMarkup", ns, str(item.it_markup))
-        if item.has_markup:
-            self._sub(mi_elem, "Markup", ns)
+
+        # 6. Markup (must be decimal value, not empty)
+        if item.has_markup and item.markup_value is not None:
+            self._sub(mi_elem, "Markup", ns, str(item.markup_value))
+
+        # 7. UP
         if rules.has_prices and item.up is not None:
             self._sub(mi_elem, "UP", ns, str(item.up))
+
+        # 8. IT
         if rules.has_totals and item.it is not None:
             self._sub(mi_elem, "IT", ns, str(item.it))
 
+        # 9. Description
         self._write_description(mi_elem, item.description, ns)
 
-        # Katalogzuordnungen
+        # 10. CtlgAssign (after Description for MarkupItem)
         for ca in item.ctlg_assignments:
             ca_elem = self._sub(mi_elem, "CtlgAssign", ns)
             if ca.ctlg_id:

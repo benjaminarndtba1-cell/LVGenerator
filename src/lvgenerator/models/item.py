@@ -78,10 +78,11 @@ class Item:
     markup_type: str = ""  # "IdentAsMark", "AllInCat", "ListInSubQty"
     markup_sub_qty_refs: list[str] = field(default_factory=list)  # IDRef values
     it_markup: Optional[Decimal] = None
-    has_markup: bool = False  # Empty <Markup/> element
+    has_markup: bool = False  # Whether <Markup> element exists
+    markup_value: Optional[Decimal] = None  # Actual Markup decimal value
 
     # Bezugspositionen
-    ref_descr: bool = False
+    ref_descr: str = ""  # "Ref" or "Rep" (empty = not present)
     ref_rno: str = ""
     ref_rno_idref: str = ""
     ref_perf_no: str = ""

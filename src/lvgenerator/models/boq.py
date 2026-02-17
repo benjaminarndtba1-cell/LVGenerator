@@ -50,6 +50,7 @@ class BoQInfo:
     catalogs: list[Catalog] = field(default_factory=list)
     no_up_comps: int = 0
     up_comp_labels: dict[int, str] = field(default_factory=dict)
+    up_comp_types: dict[int, str] = field(default_factory=dict)  # Type attr for LblUPComp
     totals: Optional[Totals] = None
     add_texts: list[AddText] = field(default_factory=list)
 

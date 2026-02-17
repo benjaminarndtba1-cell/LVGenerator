@@ -231,9 +231,14 @@ class GAEBReader:
             except ValueError:
                 pass
         for i in range(1, 7):
-            lbl = self._text(bi, f"g:LblUPComp{i}", ns)
-            if lbl:
-                info.up_comp_labels[i] = lbl
+            lbl_elem = bi.find(f"g:LblUPComp{i}", ns)
+            if lbl_elem is not None:
+                lbl = lbl_elem.text.strip() if lbl_elem.text else ""
+                if lbl:
+                    info.up_comp_labels[i] = lbl
+                comp_type = lbl_elem.get("Type", "")
+                if comp_type:
+                    info.up_comp_types[i] = comp_type
 
         totals_elem = bi.find("g:Totals", ns)
         if totals_elem is not None:
@@ -355,8 +360,9 @@ class GAEBReader:
                     item.surcharge_refs.append(rno)
 
         # Bezugspositionen
-        if item_elem.find("g:RefDescr", ns) is not None:
-            item.ref_descr = True
+        ref_descr_elem = item_elem.find("g:RefDescr", ns)
+        if ref_descr_elem is not None:
+            item.ref_descr = ref_descr_elem.text.strip() if ref_descr_elem.text else "Ref"
         ref_rno_elem = item_elem.find("g:RefRNo", ns)
         if ref_rno_elem is not None:
             item.ref_rno = ref_rno_elem.text.strip() if ref_rno_elem.text else ""
@@ -444,13 +450,16 @@ class GAEBReader:
         item.up = self._decimal(elem, "g:UP", ns)
         item.it = self._decimal(elem, "g:IT", ns)
         item.it_markup = self._decimal(elem, "g:ITMarkup", ns)
-        if elem.find("g:Markup", ns) is not None:
+        markup_elem = elem.find("g:Markup", ns)
+        if markup_elem is not None:
             item.has_markup = True
+            item.markup_value = self._decimal(elem, "g:Markup", ns)
         item.pred_qty = self._decimal(elem, "g:PredQty", ns)
 
         # Bezugspositionen
-        if elem.find("g:RefDescr", ns) is not None:
-            item.ref_descr = True
+        ref_descr_elem2 = elem.find("g:RefDescr", ns)
+        if ref_descr_elem2 is not None:
+            item.ref_descr = ref_descr_elem2.text.strip() if ref_descr_elem2.text else "Ref"
         ref_rno_elem = elem.find("g:RefRNo", ns)
         if ref_rno_elem is not None:
             item.ref_rno = ref_rno_elem.text.strip() if ref_rno_elem.text else ""

@@ -420,7 +420,7 @@
                       </Item>
                       <MarkupItem ID="CBHMEFIA" RNoPart="40">
                         <ITMarkup>955.00</ITMarkup>
-                        <Markup/>
+                        <Markup>10.00</Markup>
                         <IT>95.50</IT>
                       </MarkupItem>
                     </Itemlist>
@@ -450,17 +450,17 @@
                       </Item>
                       <MarkupItem ID="CBHMFKNA" RNoPart="40">
                         <ITMarkup>1400.00</ITMarkup>
-                        <Markup/>
+                        <Markup>10.00</Markup>
                         <IT>140.00</IT>
                       </MarkupItem>
                       <MarkupItem ID="CBHMFOAI" RNoPart="50">
                         <ITMarkup>1400.00</ITMarkup>
-                        <Markup/>
+                        <Markup>10.00</Markup>
                         <IT>140.00</IT>
                       </MarkupItem>
                       <MarkupItem ID="CBHMGGLA" RNoPart="70">
                         <ITMarkup>100.00</ITMarkup>
-                        <Markup/>
+                        <Markup>10.00</Markup>
                         <IT>10.00</IT>
                       </MarkupItem>
                     </Itemlist>
@@ -482,12 +482,12 @@
                       </Item>
                       <MarkupItem ID="CBHMCKPA" RNoPart="30">
                         <ITMarkup>400.00</ITMarkup>
-                        <Markup/>
+                        <Markup>10.00</Markup>
                         <IT>40.00</IT>
                       </MarkupItem>
                       <MarkupItem ID="CBHMBLMI" RNoPart="40">
                         <ITMarkup>2791.00</ITMarkup>
-                        <Markup/>
+                        <Markup>10.00</Markup>
                         <IT>279.10</IT>
                       </MarkupItem>
                     </Itemlist>

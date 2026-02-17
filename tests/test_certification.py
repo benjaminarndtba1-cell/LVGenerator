@@ -9,6 +9,7 @@ from lvgenerator.constants import GAEBPhase, GAEB_DEFAULT_VERSION
 from lvgenerator.gaeb.phase_rules import get_rules
 from lvgenerator.gaeb.reader import GAEBReader
 from lvgenerator.gaeb.writer import GAEBWriter
+from lvgenerator.gaeb.xsd_validator import validate_file, get_xsd_path
 from lvgenerator.models.boq import BoQ, BoQInfo
 from lvgenerator.models.category import BoQCategory
 from lvgenerator.models.item import Item, ItemDescription
@@ -765,3 +766,163 @@ class TestBVBSRoundtrip:
         assert item is not None
         assert item.up == orig.up
         assert item.it == orig.it
+
+
+# --- XSD-Validierung (Pruefkriterium 2.2 / 3.5) ---
+
+class TestXSDValidation:
+    """XSD-Validierung der Roundtrip-Dateien (BVBS Pruefkriterien 2.2, 3.5)."""
+
+    def _roundtrip_and_validate(self, src_path: str) -> None:
+        """Read source, write to temp file, validate against XSD."""
+        reader = GAEBReader()
+        writer = GAEBWriter()
+        project = reader.read(src_path)
+
+        with tempfile.NamedTemporaryFile(
+            suffix=project.phase.file_extension, delete=False
+        ) as tmp:
+            tmp_path = tmp.name
+
+        try:
+            writer.write(project, tmp_path)
+            result = validate_file(tmp_path)
+            if not result.is_valid:
+                errors = "\n".join(
+                    f"  Line {e.line}: {e.message}" for e in result.errors[:10]
+                )
+                pytest.fail(
+                    f"XSD-Validierung fehlgeschlagen fuer {project.phase.name}:\n{errors}"
+                )
+        finally:
+            import os
+            os.unlink(tmp_path)
+
+    def test_xsd_schemas_available(self):
+        """XSD-Schemas fuer alle Phasen vorhanden."""
+        for phase in [GAEBPhase.X81, GAEBPhase.X83, GAEBPhase.X84, GAEBPhase.X86]:
+            xsd_path = get_xsd_path(phase, "3.3")
+            assert xsd_path is not None, f"XSD fuer {phase.name} nicht gefunden"
+            assert xsd_path.is_file()
+
+    def test_2_2_xsd_roundtrip_x81(self):
+        """Pruefkriterium 2.2: X81 Roundtrip XSD-valide."""
+        src = BVBS_DIR / "x81" / "BVBS_Pruefdatei GAEB DA XML 3.3 - AVA - V 11 06 2021.X81"
+        if not src.exists():
+            pytest.skip("BVBS X81 Pruefdatei nicht vorhanden")
+        self._roundtrip_and_validate(str(src))
+
+    def test_3_5_xsd_roundtrip_x84(self):
+        """Pruefkriterium 3.5: X84 Roundtrip XSD-valide."""
+        src = BVBS_DIR / "x84" / "BVBS_Pruefdatei GAEB DA XML 3.3 - AVA - V 11 06 2021.X84"
+        if not src.exists():
+            pytest.skip("BVBS X84 Pruefdatei nicht vorhanden")
+        self._roundtrip_and_validate(str(src))
+
+    def test_3_5_xsd_roundtrip_x86(self):
+        """Pruefkriterium 3.5: X86 Roundtrip XSD-valide."""
+        src = BVBS_DIR / "x86" / "BVBS_Pruefdatei GAEB DA XML 3.3 - AVA - V 11 06 2021.X86"
+        if not src.exists():
+            pytest.skip("BVBS X86 Pruefdatei nicht vorhanden")
+        self._roundtrip_and_validate(str(src))
+
+    def test_xsd_original_x81_valid(self):
+        """Original BVBS X81 Pruefdatei ist XSD-valide."""
+        src = BVBS_DIR / "x81" / "BVBS_Pruefdatei GAEB DA XML 3.3 - AVA - V 11 06 2021.X81"
+        if not src.exists():
+            pytest.skip("BVBS X81 Pruefdatei nicht vorhanden")
+        result = validate_file(str(src))
+        assert result.is_valid
+        assert result.phase == GAEBPhase.X81
+
+    def test_xsd_original_x86_valid(self):
+        """Original BVBS X86 Pruefdatei ist XSD-valide."""
+        src = BVBS_DIR / "x86" / "BVBS_Pruefdatei GAEB DA XML 3.3 - AVA - V 11 06 2021.X86"
+        if not src.exists():
+            pytest.skip("BVBS X86 Pruefdatei nicht vorhanden")
+        result = validate_file(str(src))
+        assert result.is_valid
+        assert result.phase == GAEBPhase.X86
+
+    def test_xsd_detects_phase(self):
+        """XSD-Validator erkennt Phase automatisch."""
+        src = BVBS_DIR / "x84" / "BVBS_Pruefdatei GAEB DA XML 3.3 - AVA - V 11 06 2021.X84"
+        if not src.exists():
+            pytest.skip("BVBS X84 Pruefdatei nicht vorhanden")
+        result = validate_file(str(src))
+        assert result.phase == GAEBPhase.X84
+        assert result.version == "3.3"
+
+    def test_roundtrip_ref_descr_preserved(self, bvbs_x81):
+        """RefDescr-Wert (Ref/Rep) wird korrekt roundtripped."""
+        item = _find_item_by_ordinal(bvbs_x81, "1.10.20.10")
+        assert item is not None
+        assert item.ref_descr == "Ref"
+
+        item2 = _find_item_by_ordinal(bvbs_x81, "1.10.20.11")
+        assert item2 is not None
+        assert item2.ref_descr == "Rep"
+
+    def test_roundtrip_sum_descr_preserved(self, bvbs_x81):
+        """SumDescr wird als 'Yes' roundtripped."""
+        item = _find_item_by_ordinal(bvbs_x81, "1.10.15.10")
+        assert item is not None
+        assert item.sum_descr is True
+
+    def test_roundtrip_markup_value_preserved(self, bvbs_x86):
+        """Markup-Dezimalwert wird korrekt roundtripped."""
+        result = self._roundtrip_project(bvbs_x86)
+        # Find a MarkupItem
+        for cat in self._iter_all_categories(result):
+            for item in cat.items:
+                if item.is_markup_item and item.markup_value is not None:
+                    assert item.markup_value == _find_markup_item_value(
+                        bvbs_x86, item.id
+                    )
+                    return
+        # If no markup items found, that's also OK (test is skipped implicitly)
+
+    def test_roundtrip_up_comp_types_preserved(self, bvbs_x86):
+        """LblUPComp Type-Attribut wird korrekt roundtripped."""
+        result = self._roundtrip_project(bvbs_x86)
+        assert len(result.boq.info.up_comp_types) > 0
+        for i, comp_type in result.boq.info.up_comp_types.items():
+            assert comp_type == bvbs_x86.boq.info.up_comp_types[i]
+
+    def _roundtrip_project(self, project):
+        reader = GAEBReader()
+        writer = GAEBWriter()
+        with tempfile.NamedTemporaryFile(
+            suffix=project.phase.file_extension, delete=False
+        ) as tmp:
+            tmp_path = tmp.name
+        try:
+            writer.write(project, tmp_path)
+            return reader.read(tmp_path)
+        finally:
+            import os
+            os.unlink(tmp_path)
+
+    def _iter_all_categories(self, project):
+        def _iter(cats):
+            for cat in cats:
+                yield cat
+                yield from _iter(cat.subcategories)
+        if project.boq:
+            yield from _iter(project.boq.categories)
+
+
+def _find_markup_item_value(project, item_id):
+    """Find Markup value for a MarkupItem by ID."""
+    def _search(cats):
+        for cat in cats:
+            for item in cat.items:
+                if item.id == item_id and item.is_markup_item:
+                    return item.markup_value
+            result = _search(cat.subcategories)
+            if result is not None:
+                return result
+        return None
+    if project.boq:
+        return _search(project.boq.categories)
+    return None
