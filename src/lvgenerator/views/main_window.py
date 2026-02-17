@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QAction, QKeySequence, QUndoStack
+from PySide6.QtGui import QAction, QIcon, QKeySequence, QUndoStack
 from PySide6.QtWidgets import (
     QMainWindow,
     QSplitter,
@@ -33,13 +33,24 @@ class MainWindow(QMainWindow):
         self._setup_status_bar()
 
     def _setup_actions(self) -> None:
-        self.action_new = QAction("&Neu", self)
+        style = self.style()
+
+        self.action_new = QAction(
+            style.standardIcon(style.StandardPixmap.SP_FileIcon),
+            "&Neu", self,
+        )
         self.action_new.setShortcut(QKeySequence.New)
 
-        self.action_open = QAction("&Öffnen...", self)
+        self.action_open = QAction(
+            style.standardIcon(style.StandardPixmap.SP_DialogOpenButton),
+            "&Öffnen...", self,
+        )
         self.action_open.setShortcut(QKeySequence.Open)
 
-        self.action_save = QAction("&Speichern", self)
+        self.action_save = QAction(
+            style.standardIcon(style.StandardPixmap.SP_DialogSaveButton),
+            "&Speichern", self,
+        )
         self.action_save.setShortcut(QKeySequence.Save)
 
         self.action_save_as = QAction("Speichern &unter...", self)
@@ -51,23 +62,44 @@ class MainWindow(QMainWindow):
         self.action_exit.setShortcut(QKeySequence.Quit)
         self.action_exit.triggered.connect(self.close)
 
-        self.action_undo = QAction("Rückgängig", self)
+        self.action_undo = QAction(
+            style.standardIcon(style.StandardPixmap.SP_ArrowBack),
+            "Rückgängig", self,
+        )
         self.action_undo.setShortcut(QKeySequence.Undo)
         self.action_undo.setEnabled(False)
 
-        self.action_redo = QAction("Wiederholen", self)
+        self.action_redo = QAction(
+            style.standardIcon(style.StandardPixmap.SP_ArrowForward),
+            "Wiederholen", self,
+        )
         self.action_redo.setShortcut(QKeySequence.Redo)
         self.action_redo.setEnabled(False)
 
-        self.action_add_category = QAction("Kategorie hinzufügen", self)
-        self.action_add_item = QAction("Position hinzufügen", self)
-        self.action_delete = QAction("Löschen", self)
+        self.action_add_category = QAction(
+            style.standardIcon(style.StandardPixmap.SP_DirIcon),
+            "Kategorie hinzufügen", self,
+        )
+        self.action_add_item = QAction(
+            style.standardIcon(style.StandardPixmap.SP_FileDialogNewFolder),
+            "Position hinzufügen", self,
+        )
+        self.action_delete = QAction(
+            style.standardIcon(style.StandardPixmap.SP_TrashIcon),
+            "Löschen", self,
+        )
         self.action_delete.setShortcut(QKeySequence.Delete)
 
-        self.action_move_up = QAction("Nach oben", self)
+        self.action_move_up = QAction(
+            style.standardIcon(style.StandardPixmap.SP_ArrowUp),
+            "Nach oben", self,
+        )
         self.action_move_up.setShortcut(QKeySequence("Alt+Up"))
 
-        self.action_move_down = QAction("Nach unten", self)
+        self.action_move_down = QAction(
+            style.standardIcon(style.StandardPixmap.SP_ArrowDown),
+            "Nach unten", self,
+        )
         self.action_move_down.setShortcut(QKeySequence("Alt+Down"))
 
         self.action_duplicate = QAction("Duplizieren", self)
@@ -125,6 +157,8 @@ class MainWindow(QMainWindow):
     def _setup_toolbar(self) -> None:
         toolbar = QToolBar("Hauptwerkzeugleiste")
         toolbar.setMovable(False)
+        toolbar.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
+        toolbar.setIconSize(toolbar.iconSize() * 1.2)
         self.addToolBar(toolbar)
 
         toolbar.addAction(self.action_new)

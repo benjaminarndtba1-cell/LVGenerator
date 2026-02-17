@@ -83,7 +83,7 @@ class MainController:
         # About
         self.window.action_about.triggered.connect(self._show_about)
 
-        # Tree selection
+        # Tree selection (clicked for mouse)
         self.window.tree_view.clicked.connect(self._on_tree_selection)
 
         # Context menu
@@ -124,6 +124,11 @@ class MainController:
         self.proxy_model.setSourceModel(self.tree_model)
         self.window.tree_view.setModel(self.proxy_model)
 
+        # Keyboard navigation (reconnect because selectionModel changes with model)
+        self.window.tree_view.selectionModel().currentChanged.connect(
+            self._on_tree_selection
+        )
+
         # Drag-and-drop signal
         self.tree_model.drop_requested.connect(self._on_drop_requested)
 
@@ -152,7 +157,17 @@ class MainController:
         # Expand all categories
         self.window.tree_view.expandAll()
 
-        # Resize columns
+        # Resize columns with minimum widths
+        from PySide6.QtWidgets import QHeaderView
+        header = self.window.tree_view.header()
+        header.setStretchLastSection(False)
+        # All columns: resize to contents first
+        for i in range(self.tree_model.columnCount()):
+            header.setSectionResizeMode(i, QHeaderView.ResizeToContents)
+        # Beschreibung column stretches to fill remaining space
+        header.setSectionResizeMode(1, QHeaderView.Stretch)
+        # Set minimum widths for numeric columns
+        header.setMinimumSectionSize(50)
         for i in range(self.tree_model.columnCount()):
             self.window.tree_view.resizeColumnToContents(i)
 

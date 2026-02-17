@@ -66,7 +66,7 @@ class ItemEditorWidget(QWidget):
         layout.addWidget(pos_group)
 
         # Quantities & formula
-        qty_group = QGroupBox("Mengen & Preise")
+        qty_group = QGroupBox("Mengen && Preise")
         qty_layout = QFormLayout(qty_group)
 
         self.qty_edit = QLineEdit()
