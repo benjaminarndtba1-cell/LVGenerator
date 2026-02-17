@@ -1,4 +1,5 @@
 import uuid
+from copy import deepcopy
 from datetime import date, time
 
 from lxml import etree
@@ -7,23 +8,29 @@ from lvgenerator.constants import GAEBPhase, GAEB_DEFAULT_VERSION
 from lvgenerator.gaeb.namespaces import get_namespace
 from lvgenerator.gaeb.phase_rules import get_rules
 from lvgenerator.gaeb.text_parser import build_text_element
-from lvgenerator.models.boq import BoQ, BoQBkdn, BoQInfo, Totals
+from lvgenerator.models.boq import BoQ, BoQBkdn, BoQInfo, Catalog, Totals
 from lvgenerator.models.category import BoQCategory
 from lvgenerator.models.item import Item
 from lvgenerator.models.project import GAEBProject
+from lvgenerator.models.text_types import AddText
 
 
 class GAEBWriter:
 
     def write(self, project: GAEBProject, file_path: str,
               version: str = GAEB_DEFAULT_VERSION) -> None:
-        ns_uri = get_namespace(project.phase, version)
+        # Use the project's own version if available to avoid namespace mismatch
+        effective_version = project.gaeb_info.version or version
+        ns_uri = get_namespace(project.phase, effective_version)
         nsmap = {None: ns_uri}
 
         root = etree.Element(f"{{{ns_uri}}}GAEB", nsmap=nsmap)
         self._write_gaeb_info(root, project.gaeb_info, ns_uri)
         self._write_prj_info(root, project.prj_info, ns_uri)
         self._write_award(root, project, ns_uri)
+
+        # GAEB-level AddTexts (Schlussbemerkungen)
+        self._write_add_texts(root, project.gaeb_add_texts, ns_uri)
 
         tree = etree.ElementTree(root)
         tree.write(
@@ -61,6 +68,8 @@ class GAEBWriter:
             self._sub(pi, "LblPrj", ns, info.label)
         self._sub(pi, "Cur", ns, info.currency)
         self._sub(pi, "CurLbl", ns, info.currency_label)
+        if info.bid_comm_perm:
+            self._sub(pi, "BidCommPerm", ns, "Yes")
 
     def _write_award(self, root: etree._Element, project: GAEBProject, ns: str) -> None:
         award = self._sub(root, "Award", ns)
@@ -68,9 +77,33 @@ class GAEBWriter:
 
         ai = self._sub(award, "AwardInfo", ns)
         boq_id = project.award_info.boq_id or str(uuid.uuid4())
+        if project.award_info.cat:
+            self._sub(ai, "Cat", ns, project.award_info.cat)
         self._sub(ai, "BoQID", ns, boq_id)
         self._sub(ai, "Cur", ns, project.award_info.currency)
         self._sub(ai, "CurLbl", ns, project.award_info.currency_label)
+        if project.award_info.open_date:
+            self._sub(ai, "OpenDate", ns, project.award_info.open_date)
+        if project.award_info.open_time:
+            self._sub(ai, "OpenTime", ns, project.award_info.open_time)
+        if project.award_info.eval_end:
+            self._sub(ai, "EvalEnd", ns, project.award_info.eval_end)
+        if project.award_info.subm_loc:
+            self._sub(ai, "SubmLoc", ns, project.award_info.subm_loc)
+        if project.award_info.cnst_start:
+            self._sub(ai, "CnstStart", ns, project.award_info.cnst_start)
+        if project.award_info.cnst_end:
+            self._sub(ai, "CnstEnd", ns, project.award_info.cnst_end)
+        if project.award_info.contr_no:
+            self._sub(ai, "ContrNo", ns, project.award_info.contr_no)
+        if project.award_info.contr_date:
+            self._sub(ai, "ContrDate", ns, project.award_info.contr_date)
+        if project.award_info.accept_type:
+            self._sub(ai, "AcceptType", ns, project.award_info.accept_type)
+        if project.award_info.warr_dur:
+            self._sub(ai, "WarrDur", ns, project.award_info.warr_dur)
+        if project.award_info.warr_unit:
+            self._sub(ai, "WarrUnit", ns, project.award_info.warr_unit)
 
         if project.owner:
             own = self._sub(award, "OWN", ns)
@@ -87,6 +120,11 @@ class GAEBWriter:
                 self._sub(addr, "PCode", ns, project.owner.pcode)
             if project.owner.city:
                 self._sub(addr, "City", ns, project.owner.city)
+            if project.award_info.award_no:
+                self._sub(own, "AwardNo", ns, project.award_info.award_no)
+
+        # Award-level AddTexts
+        self._write_add_texts(award, project.award_add_texts, ns)
 
         if project.boq:
             self._write_boq(award, project.boq, project.phase, ns)
@@ -118,15 +156,32 @@ class GAEBWriter:
         for bkdn in info.breakdowns:
             self._write_breakdown(bi, bkdn, ns)
 
+        # Kataloge
+        for ctlg in info.catalogs:
+            self._write_catalog(bi, ctlg, ns)
+
         rules = get_rules(phase)
         if rules.has_totals and info.totals:
             self._write_totals(bi, info.totals, ns)
 
+        self._write_add_texts(bi, info.add_texts, ns)
+
     def _write_breakdown(self, parent: etree._Element, bkdn: BoQBkdn, ns: str) -> None:
         b = self._sub(parent, "BoQBkdn", ns)
         self._sub(b, "Type", ns, bkdn.type)
+        if bkdn.label:
+            self._sub(b, "LblBoQBkdn", ns, bkdn.label)
         self._sub(b, "Length", ns, str(bkdn.length))
         self._sub(b, "Num", ns, "Yes" if bkdn.numeric else "No")
+        if bkdn.alignment:
+            self._sub(b, "Alignment", ns, bkdn.alignment)
+
+    def _write_catalog(self, parent: etree._Element, ctlg: Catalog, ns: str) -> None:
+        c = self._sub(parent, "Ctlg", ns)
+        if ctlg.ctlg_id:
+            self._sub(c, "CtlgID", ns, ctlg.ctlg_id)
+        if ctlg.ctlg_name:
+            self._sub(c, "CtlgName", ns, ctlg.ctlg_name)
 
     def _write_totals(self, parent: etree._Element, totals: Totals, ns: str) -> None:
         t = self._sub(parent, "Totals", ns)
@@ -156,6 +211,20 @@ class GAEBWriter:
             span = etree.SubElement(p, f"{{{ns}}}span")
             span.text = cat.label
 
+        # Grund-/Wahlgruppen auf Kategorieebene
+        if cat.aln_b_group_no:
+            self._sub(ctgy, "ALNBGroupNo", ns, cat.aln_b_group_no)
+        if cat.aln_b_ser_no:
+            self._sub(ctgy, "ALNBSerNo", ns, cat.aln_b_ser_no)
+
+        if cat.exec_descr:
+            ed = self._sub(ctgy, "ExecDescr", ns)
+            text_elem = self._sub(ed, "Text", ns)
+            for line in cat.exec_descr.split("\n"):
+                p = etree.SubElement(text_elem, f"{{{ns}}}p")
+                span = etree.SubElement(p, f"{{{ns}}}span")
+                span.text = line
+
         if cat.subcategories or cat.items:
             body = self._sub(ctgy, "BoQBody", ns)
             for subcat in cat.subcategories:
@@ -163,7 +232,12 @@ class GAEBWriter:
             if cat.items:
                 itemlist = self._sub(body, "Itemlist", ns)
                 for item in cat.items:
-                    self._write_item(itemlist, item, phase, ns)
+                    if item.is_markup_item:
+                        self._write_markup_item(itemlist, item, phase, ns)
+                    else:
+                        self._write_item(itemlist, item, phase, ns)
+
+        self._write_add_texts(ctgy, cat.add_texts, ns)
 
     def _write_item(self, parent: etree._Element, item: Item,
                     phase: GAEBPhase, ns: str) -> None:
@@ -174,11 +248,46 @@ class GAEBWriter:
         if item.rno_part:
             item_elem.set("RNoPart", item.rno_part)
 
+        # Positionstypen
+        if item.provis:
+            self._sub(item_elem, "Provis", ns, item.provis)
+        if item.aln_group_no:
+            self._sub(item_elem, "ALNGroupNo", ns, item.aln_group_no)
+        if item.aln_ser_no:
+            self._sub(item_elem, "ALNSerNo", ns, item.aln_ser_no)
+        if item.free_qty:
+            self._sub(item_elem, "FreeQty", ns, "Yes")
+        if item.key_it:
+            self._sub(item_elem, "KeyIt", ns, "Yes")
+
+        # Zuschlag
+        if item.surcharge_type:
+            add_pl_it = self._sub(item_elem, "AddPlIT", ns)
+            self._sub(add_pl_it, "SurchargeType", ns, item.surcharge_type)
+            for ref in item.surcharge_refs:
+                grp = self._sub(add_pl_it, "AddPlITGrp", ns)
+                self._sub(grp, "RNoPart", ns, ref)
+
+        if item.markup_it:
+            self._sub(item_elem, "MarkupIt", ns, "Yes")
+
+        # Bezugspositionen
+        if item.ref_descr:
+            self._sub(item_elem, "RefDescr", ns)
+        if item.ref_rno:
+            self._sub(item_elem, "RefRNo", ns, item.ref_rno)
+        if item.ref_perf_no:
+            self._sub(item_elem, "RefPerfNo", ns, item.ref_perf_no)
+        if item.sum_descr:
+            self._sub(item_elem, "SumDescr", ns)
+
         effective_qty = item.get_effective_qty()
         if rules.has_quantities and effective_qty is not None:
             self._sub(item_elem, "Qty", ns, str(effective_qty))
         if item.qty_tbd:
             self._sub(item_elem, "QtyTBD", ns, "Yes")
+        if item.pred_qty is not None:
+            self._sub(item_elem, "PredQty", ns, str(item.pred_qty))
         if item.qu:
             self._sub(item_elem, "QU", ns, item.qu)
 
@@ -202,31 +311,178 @@ class GAEBWriter:
             self._sub(item_elem, "NotOffered", ns, "Yes")
         if item.hour_it:
             self._sub(item_elem, "HourIt", ns, "Yes")
+        if item.lump_sum_item:
+            self._sub(item_elem, "LumpSumItem", ns, "Yes")
+
+        # Mengensplit
+        for split in item.qty_splits:
+            qs = self._sub(item_elem, "QtySplit", ns)
+            if "qty" in split:
+                self._sub(qs, "Qty", ns, str(split["qty"]))
+            if "ctlg_id" in split:
+                ca = self._sub(qs, "CtlgAssign", ns)
+                self._sub(ca, "CtlgID", ns, split["ctlg_id"])
+                if "ctlg_code" in split:
+                    self._sub(ca, "CtlgCode", ns, split["ctlg_code"])
+
+        # Unterbeschreibungen
+        for sd in item.sub_descriptions:
+            sd_elem = self._sub(item_elem, "SubDescr", ns)
+            if sd.sub_d_no:
+                self._sub(sd_elem, "SubDNo", ns, sd.sub_d_no)
+            if sd.qty is not None:
+                self._sub(sd_elem, "Qty", ns, str(sd.qty))
+            if sd.qty_spec:
+                self._sub(sd_elem, "QtySpec", ns, sd.qty_spec)
+            if sd.qu:
+                self._sub(sd_elem, "QU", ns, sd.qu)
+            if sd.description is not None:
+                self._write_description(sd_elem, sd.description, ns)
 
         self._write_description(item_elem, item.description, ns)
 
-    def _write_description(self, parent: etree._Element, desc, ns: str) -> None:
-        if not desc.outline_text and not desc.detail_text:
-            return
+        # Katalogzuordnungen
+        for ca in item.ctlg_assignments:
+            ca_elem = self._sub(item_elem, "CtlgAssign", ns)
+            if ca.ctlg_id:
+                self._sub(ca_elem, "CtlgID", ns, ca.ctlg_id)
+            if ca.ctlg_code:
+                self._sub(ca_elem, "CtlgCode", ns, ca.ctlg_code)
 
-        description = self._sub(parent, "Description", ns)
+        # Zusatztexte
+        self._write_add_texts(item_elem, item.add_texts, ns)
 
-        if desc.detail_text or desc.outline_text:
-            complete = self._sub(description, "CompleteText", ns)
-
-            if desc.detail_text:
-                detail_txt = self._sub(complete, "DetailTxt", ns)
-                text_elem = self._sub(detail_txt, "Text", ns)
-                for line in desc.detail_text.split("\n"):
+        # Bieterkommentare und Textergaenzungen (nur X84)
+        if rules.has_bid_comments:
+            for comment in item.bid_comments:
+                bc = self._sub(item_elem, "BidComm", ns)
+                text_elem = self._sub(bc, "Text", ns)
+                for line in comment.split("\n"):
+                    p = etree.SubElement(text_elem, f"{{{ns}}}p")
+                    span = etree.SubElement(p, f"{{{ns}}}span")
+                    span.text = line
+            for compl in item.text_compls:
+                tc = self._sub(item_elem, "TextCompl", ns)
+                text_elem = self._sub(tc, "Text", ns)
+                for line in compl.split("\n"):
                     p = etree.SubElement(text_elem, f"{{{ns}}}p")
                     span = etree.SubElement(p, f"{{{ns}}}span")
                     span.text = line
 
+    def _write_markup_item(self, parent: etree._Element, item: Item,
+                           phase: GAEBPhase, ns: str) -> None:
+        """Write a MarkupItem (Zuschlagsposition) element."""
+        rules = get_rules(phase)
+        mi_elem = self._sub(parent, "MarkupItem", ns)
+        mi_id = item.id or str(uuid.uuid4())
+        mi_elem.set("ID", mi_id)
+        if item.rno_part:
+            mi_elem.set("RNoPart", item.rno_part)
+
+        if item.markup_type:
+            self._sub(mi_elem, "MarkupType", ns, item.markup_type)
+
+        if item.markup_sub_qty_refs:
+            msq = self._sub(mi_elem, "MarkupSubQty", ns)
+            for ref_id in item.markup_sub_qty_refs:
+                ref_elem = self._sub(msq, "RefItem", ns)
+                ref_elem.set("IDRef", ref_id)
+
+        effective_qty = item.get_effective_qty()
+        if rules.has_quantities and effective_qty is not None:
+            self._sub(mi_elem, "Qty", ns, str(effective_qty))
+        if item.pred_qty is not None:
+            self._sub(mi_elem, "PredQty", ns, str(item.pred_qty))
+        if item.qu:
+            self._sub(mi_elem, "QU", ns, item.qu)
+
+        if rules.has_prices and item.up is not None:
+            self._sub(mi_elem, "UP", ns, str(item.up))
+        if rules.has_totals and item.it is not None:
+            self._sub(mi_elem, "IT", ns, str(item.it))
+
+        self._write_description(mi_elem, item.description, ns)
+        self._write_add_texts(mi_elem, item.add_texts, ns)
+
+    def _write_description(self, parent: etree._Element, desc, ns: str) -> None:
+        if (not desc.outline_text and not desc.detail_text
+                and not desc.stl_no and desc.stlb_bau_raw is None):
+            return
+
+        description = self._sub(parent, "Description", ns)
+
+        if desc.stl_no:
+            self._sub(description, "StLNo", ns, desc.stl_no)
+
+        # STLBBau (roundtrip from raw XML)
+        if desc.stlb_bau_raw is not None:
+            description.append(deepcopy(desc.stlb_bau_raw))
+
+        if desc.detail_text or desc.outline_text or desc.compl_tsa or desc.compl_tsb:
+            complete = self._sub(description, "CompleteText", ns)
+
+            if desc.compl_tsa:
+                self._sub(complete, "ComplTSA", ns, desc.compl_tsa)
+            if desc.compl_tsb:
+                self._sub(complete, "ComplTSB", ns, desc.compl_tsb)
+
+            if desc.detail_text:
+                detail_txt = self._sub(complete, "DetailTxt", ns)
+                if desc.detail_html:
+                    self._write_raw_html(detail_txt, desc.detail_html, ns)
+                else:
+                    text_elem = self._sub(detail_txt, "Text", ns)
+                    for line in desc.detail_text.split("\n"):
+                        p = etree.SubElement(text_elem, f"{{{ns}}}p")
+                        span = etree.SubElement(p, f"{{{ns}}}span")
+                        span.text = line
+
             if desc.outline_text:
                 outline = self._sub(complete, "OutlineText", ns)
                 outl_txt = self._sub(outline, "OutlTxt", ns)
-                text_outl = self._sub(outl_txt, "TextOutlTxt", ns)
-                for line in desc.outline_text.split("\n"):
-                    p = etree.SubElement(text_outl, f"{{{ns}}}p")
-                    span = etree.SubElement(p, f"{{{ns}}}span")
-                    span.text = line
+                if desc.outline_html:
+                    self._write_raw_html(outl_txt, desc.outline_html, ns)
+                else:
+                    text_outl = self._sub(outl_txt, "TextOutlTxt", ns)
+                    for line in desc.outline_text.split("\n"):
+                        p = etree.SubElement(text_outl, f"{{{ns}}}p")
+                        span = etree.SubElement(p, f"{{{ns}}}span")
+                        span.text = line
+
+    def _write_raw_html(self, parent: etree._Element, html: str, ns: str) -> None:
+        """Write preserved HTML back into the XML tree."""
+        try:
+            fragment = etree.fromstring(html)
+            parent.append(fragment)
+        except etree.XMLSyntaxError:
+            # Fallback: wrap in Text element
+            text_elem = self._sub(parent, "Text", ns)
+            text_elem.text = html
+
+    def _write_add_texts(self, parent: etree._Element,
+                         add_texts: list[AddText], ns: str) -> None:
+        for at in add_texts:
+            at_elem = self._sub(parent, "AddText", ns)
+            if at.outline_text:
+                if at.outline_html:
+                    oat = self._sub(at_elem, "OutlineAddText", ns)
+                    self._write_raw_html(oat, at.outline_html, ns)
+                else:
+                    oat = self._sub(at_elem, "OutlineAddText", ns)
+                    outl_txt = self._sub(oat, "OutlTxt", ns)
+                    text_outl = self._sub(outl_txt, "TextOutlTxt", ns)
+                    for line in at.outline_text.split("\n"):
+                        p = etree.SubElement(text_outl, f"{{{ns}}}p")
+                        span = etree.SubElement(p, f"{{{ns}}}span")
+                        span.text = line
+            if at.detail_text:
+                if at.detail_html:
+                    dat = self._sub(at_elem, "DetailAddText", ns)
+                    self._write_raw_html(dat, at.detail_html, ns)
+                else:
+                    dat = self._sub(at_elem, "DetailAddText", ns)
+                    text_elem = self._sub(dat, "Text", ns)
+                    for line in at.detail_text.split("\n"):
+                        p = etree.SubElement(text_elem, f"{{{ns}}}p")
+                        span = etree.SubElement(p, f"{{{ns}}}span")
+                        span.text = line

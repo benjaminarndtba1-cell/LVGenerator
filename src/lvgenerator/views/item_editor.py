@@ -22,6 +22,7 @@ from lvgenerator.commands.item_commands import (
 from lvgenerator.constants import GAEBPhase
 from lvgenerator.models.formula_evaluator import evaluate_formula
 from lvgenerator.models.item import Item
+from lvgenerator.resources import theme
 from lvgenerator.validators import ItemValidator
 
 
@@ -176,7 +177,7 @@ class ItemEditorWidget(QWidget):
         self.formula_edit.clear()
         self.use_calculated_check.setChecked(False)
         self.formula_result_label.setText("")
-        self.formula_result_label.setStyleSheet("")
+        self.formula_result_label.setStyleSheet(theme.CLEAR_STYLE)
         self._update_calculation_mode()
 
     def _push_item_command(self, prop: str, old_val, new_val) -> None:
@@ -270,23 +271,23 @@ class ItemEditorWidget(QWidget):
         formula_text = self.formula_edit.text().strip()
         if not formula_text:
             self.formula_result_label.setText("")
-            self.formula_result_label.setStyleSheet("")
+            self.formula_result_label.setStyleSheet(theme.CLEAR_STYLE)
             self.formula_result_label.setToolTip("")
-            self.formula_edit.setStyleSheet("")
+            self.formula_edit.setStyleSheet(theme.CLEAR_STYLE)
             return
 
         result, error = evaluate_formula(formula_text)
         if error:
             self.formula_result_label.setText("Fehler")
-            self.formula_result_label.setStyleSheet("color: red; font-weight: bold;")
+            self.formula_result_label.setStyleSheet(theme.ERROR_TEXT)
             self.formula_result_label.setToolTip(error)
-            self.formula_edit.setStyleSheet("border: 2px solid red;")
+            self.formula_edit.setStyleSheet(theme.ERROR_BORDER)
         elif result is not None:
             display = str(result.quantize(Decimal("0.001")))
             self.formula_result_label.setText(f"= {display}")
-            self.formula_result_label.setStyleSheet("color: green; font-weight: bold;")
+            self.formula_result_label.setStyleSheet(theme.SUCCESS_TEXT)
             self.formula_result_label.setToolTip("Berechnetes Ergebnis")
-            self.formula_edit.setStyleSheet("border: 2px solid green;")
+            self.formula_edit.setStyleSheet(theme.SUCCESS_BORDER)
 
             # If formula mode active, update the qty display
             if self.use_calculated_check.isChecked():
@@ -295,9 +296,9 @@ class ItemEditorWidget(QWidget):
                 self._updating = False
         else:
             self.formula_result_label.setText("")
-            self.formula_result_label.setStyleSheet("")
+            self.formula_result_label.setStyleSheet(theme.CLEAR_STYLE)
             self.formula_result_label.setToolTip("")
-            self.formula_edit.setStyleSheet("")
+            self.formula_edit.setStyleSheet(theme.CLEAR_STYLE)
 
     def _validate(self) -> None:
         if self._current_item is None or self._phase is None:
@@ -312,13 +313,13 @@ class ItemEditorWidget(QWidget):
         for field_name, widget in field_map.items():
             errors = result.get_field_errors(field_name)
             if not errors:
-                widget.setStyleSheet("")
+                widget.setStyleSheet(theme.CLEAR_STYLE)
                 widget.setToolTip("")
             elif errors[0].severity == "error":
-                widget.setStyleSheet("border: 2px solid red;")
+                widget.setStyleSheet(theme.ERROR_BORDER)
                 widget.setToolTip(errors[0].message)
             else:
-                widget.setStyleSheet("border: 2px solid orange;")
+                widget.setStyleSheet(theme.WARNING_BORDER)
                 widget.setToolTip(errors[0].message)
 
         # Formula field validation
@@ -326,9 +327,9 @@ class ItemEditorWidget(QWidget):
         if formula_errors:
             err = formula_errors[0]
             if err.severity == "error":
-                self.formula_edit.setStyleSheet("border: 2px solid red;")
+                self.formula_edit.setStyleSheet(theme.ERROR_BORDER)
             else:
-                self.formula_edit.setStyleSheet("border: 2px solid orange;")
+                self.formula_edit.setStyleSheet(theme.WARNING_BORDER)
             self.formula_edit.setToolTip(err.message)
 
     def _update_total(self) -> None:
@@ -349,10 +350,10 @@ class ItemEditorWidget(QWidget):
         self.formula_edit.setEnabled(True)
 
         if use_calculated:
-            self.qty_edit.setStyleSheet("background-color: #f0f0f0;")
+            self.qty_edit.setStyleSheet(theme.READONLY_BG)
             self._update_formula_result()
         else:
-            self.qty_edit.setStyleSheet("")
+            self.qty_edit.setStyleSheet(theme.CLEAR_STYLE)
 
     def _on_calculation_mode_changed(self) -> None:
         """Handle change in calculation mode."""

@@ -13,6 +13,7 @@ from PySide6.QtWidgets import (
 
 from lvgenerator.commands.category_commands import EditCategoryPropertyCommand
 from lvgenerator.models.category import BoQCategory
+from lvgenerator.resources import theme
 from lvgenerator.validators import CategoryValidator
 
 
@@ -106,11 +107,11 @@ class CategoryEditorWidget(QWidget):
         for field_name, widget in field_map.items():
             errors = result.get_field_errors(field_name)
             if not errors:
-                widget.setStyleSheet("")
+                widget.setStyleSheet(theme.CLEAR_STYLE)
                 widget.setToolTip("")
             elif errors[0].severity == "error":
-                widget.setStyleSheet("border: 2px solid red;")
+                widget.setStyleSheet(theme.ERROR_BORDER)
                 widget.setToolTip(errors[0].message)
             else:
-                widget.setStyleSheet("border: 2px solid orange;")
+                widget.setStyleSheet(theme.WARNING_BORDER)
                 widget.setToolTip(errors[0].message)

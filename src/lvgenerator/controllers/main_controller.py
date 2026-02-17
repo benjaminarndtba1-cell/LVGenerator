@@ -20,6 +20,7 @@ from lvgenerator.viewmodels.boq_tree_model import (
 )
 from lvgenerator.views.global_constants_dialog import GlobalConstantsDialog
 from lvgenerator.views.main_window import MainWindow
+from lvgenerator.views.oz_mask_dialog import OZMaskDialog
 from lvgenerator.views.phase_convert_dialog import PhaseConvertDialog
 
 
@@ -48,8 +49,8 @@ class MainController:
         )
 
         # Undo/Redo
-        self.window.action_undo.triggered.connect(self.undo_stack.undo)
-        self.window.action_redo.triggered.connect(self.undo_stack.redo)
+        self.window.action_undo.triggered.connect(self._do_undo)
+        self.window.action_redo.triggered.connect(self._do_redo)
         self.undo_stack.canUndoChanged.connect(self.window.action_undo.setEnabled)
         self.undo_stack.canRedoChanged.connect(self.window.action_redo.setEnabled)
         self.undo_stack.undoTextChanged.connect(
@@ -62,7 +63,6 @@ class MainController:
                 f"Wiederholen: {t}" if t else "Wiederholen"
             )
         )
-        self.undo_stack.indexChanged.connect(self._on_undo_redo)
 
         # Edit menu
         self.window.action_add_category.triggered.connect(self.boq_ctrl.add_category)
@@ -78,6 +78,7 @@ class MainController:
         self.window.action_global_constants.triggered.connect(
             self._on_global_constants
         )
+        self.window.action_oz_mask.triggered.connect(self._on_oz_mask)
 
         # About
         self.window.action_about.triggered.connect(self._show_about)
@@ -174,7 +175,15 @@ class MainController:
             return self.proxy_model.mapToSource(proxy_index)
         return proxy_index
 
-    def _on_undo_redo(self, _idx: int) -> None:
+    def _do_undo(self) -> None:
+        self.undo_stack.undo()
+        self._on_after_undo_redo()
+
+    def _do_redo(self) -> None:
+        self.undo_stack.redo()
+        self._on_after_undo_redo()
+
+    def _on_after_undo_redo(self) -> None:
         self.refresh_tree()
         index = self.window.tree_view.currentIndex()
         self._on_tree_selection(index)
@@ -386,6 +395,41 @@ class MainController:
         if dialog.exec() == GlobalConstantsDialog.DialogCode.Accepted:
             # Refresh formula results in the item editor
             self.window.item_editor.refresh_formula()
+
+    def _on_oz_mask(self) -> None:
+        if self.project is None or self.project.boq is None:
+            QMessageBox.information(
+                self.window,
+                "Kein Projekt",
+                "Bitte öffnen oder erstellen Sie zuerst ein Projekt.",
+            )
+            return
+
+        from copy import deepcopy
+        from lvgenerator.commands.base import BaseCommand
+
+        old_breakdowns = deepcopy(self.project.boq.info.breakdowns)
+        dialog = OZMaskDialog(old_breakdowns, self.window)
+        if dialog.exec() != OZMaskDialog.DialogCode.Accepted:
+            return
+
+        new_breakdowns = dialog.get_breakdowns()
+
+        class ChangeOZMaskCommand(BaseCommand):
+            def __init__(cmd_self, project, old_bk, new_bk):
+                super().__init__("OZ-Maske ändern")
+                cmd_self._project = project
+                cmd_self._old = old_bk
+                cmd_self._new = new_bk
+
+            def redo(cmd_self) -> None:
+                cmd_self._project.boq.info.breakdowns = deepcopy(cmd_self._new)
+
+            def undo(cmd_self) -> None:
+                cmd_self._project.boq.info.breakdowns = deepcopy(cmd_self._old)
+
+        cmd = ChangeOZMaskCommand(self.project, old_breakdowns, new_breakdowns)
+        self.execute_command(cmd)
 
     def _show_about(self) -> None:
         QMessageBox.about(

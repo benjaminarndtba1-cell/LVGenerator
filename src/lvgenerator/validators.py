@@ -1,9 +1,11 @@
+import re
 from dataclasses import dataclass, field
 from decimal import Decimal, InvalidOperation
 from typing import Optional
 
 from lvgenerator.constants import GAEBPhase
 from lvgenerator.gaeb.phase_rules import get_rules
+from lvgenerator.models.boq import BoQBkdn
 from lvgenerator.models.category import BoQCategory
 from lvgenerator.models.formula_evaluator import evaluate_formula
 from lvgenerator.models.item import Item
@@ -138,6 +140,32 @@ class ProjectValidator:
             self._validate_categories(
                 cat.subcategories, phase, item_val, cat_val, errors
             )
+
+
+def validate_rno_part(rno_part: str, mask_level: Optional[BoQBkdn]) -> Optional[str]:
+    """Validiert eine Ordnungszahl gegen die OZ-Maske. Gibt Fehlermeldung zurück."""
+    if not rno_part.strip():
+        return None  # Leer wird separat geprüft
+
+    if mask_level is None:
+        return None  # Keine Maske → keine Einschränkung
+
+    # Umlaute und ß prüfen
+    if re.search(r'[äöüÄÖÜß]', rno_part):
+        return "Umlaute und ß sind in Ordnungszahlen nicht erlaubt"
+
+    # Länge prüfen
+    if len(rno_part) > mask_level.length:
+        return (
+            f"Ordnungszahl ist zu lang "
+            f"({len(rno_part)} Stellen, max. {mask_level.length})"
+        )
+
+    # Numerisch prüfen
+    if mask_level.numeric and not rno_part.isdigit():
+        return "Ordnungszahl muss numerisch sein (nur Ziffern)"
+
+    return None
 
 
 def validate_decimal_input(text: str) -> tuple[Optional[Decimal], Optional[str]]:

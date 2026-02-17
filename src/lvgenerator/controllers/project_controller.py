@@ -32,6 +32,7 @@ class ProjectController:
 
         phase = dialog.get_phase()
         name = dialog.get_project_name()
+        breakdowns = dialog.get_breakdowns()
 
         project = GAEBProject()
         project.phase = phase
@@ -43,10 +44,7 @@ class ProjectController:
             info=BoQInfo(
                 name=name,
                 date=date.today(),
-                breakdowns=[
-                    BoQBkdn(type="BoQLevel", length=2, numeric=True),
-                    BoQBkdn(type="Item", length=4, numeric=True),
-                ],
+                breakdowns=breakdowns,
             ),
         )
 

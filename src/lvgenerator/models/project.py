@@ -8,12 +8,13 @@ if TYPE_CHECKING:
     from lvgenerator.constants import GAEBPhase
     from lvgenerator.models.boq import BoQ
     from lvgenerator.models.address import Address
+    from lvgenerator.models.text_types import AddText
 
 
 @dataclass
 class GAEBInfo:
-    version: str = "3.2"
-    vers_date: str = "2013-10"
+    version: str = "3.3"
+    vers_date: str = "2021-05"
     date: Optional[date] = None
     time: Optional[time] = None
     prog_system: str = "LVGenerator"
@@ -27,6 +28,7 @@ class PrjInfo:
     description: str = ""
     currency: str = "EUR"
     currency_label: str = "Euro"
+    bid_comm_perm: bool = False
 
 
 @dataclass
@@ -34,6 +36,19 @@ class AwardInfo:
     boq_id: str = ""
     currency: str = "EUR"
     currency_label: str = "Euro"
+    cat: str = ""
+    open_date: str = ""
+    open_time: str = ""
+    eval_end: str = ""
+    subm_loc: str = ""
+    cnst_start: str = ""
+    cnst_end: str = ""
+    contr_no: str = ""
+    contr_date: str = ""
+    accept_type: str = ""
+    warr_dur: str = ""
+    warr_unit: str = ""
+    award_no: str = ""
 
 
 @dataclass
@@ -44,3 +59,5 @@ class GAEBProject:
     owner: Optional[Address] = None
     phase: Optional[GAEBPhase] = None
     boq: Optional[BoQ] = None
+    award_add_texts: list[AddText] = field(default_factory=list)
+    gaeb_add_texts: list[AddText] = field(default_factory=list)

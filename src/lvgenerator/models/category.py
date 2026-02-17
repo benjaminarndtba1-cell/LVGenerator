@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
     from lvgenerator.models.item import Item
+    from lvgenerator.models.text_types import AddText
 
 
 @dataclass
@@ -16,6 +17,11 @@ class BoQCategory:
     label_html: str = ""
     subcategories: list[BoQCategory] = field(default_factory=list)
     items: list[Item] = field(default_factory=list)
+    add_texts: list[AddText] = field(default_factory=list)
+    exec_descr: str = ""
+    exec_descr_html: str = ""
+    aln_b_group_no: str = ""
+    aln_b_ser_no: str = ""
 
     def get_full_ordinal(self, parent_ordinal: str = "") -> str:
         if parent_ordinal:
