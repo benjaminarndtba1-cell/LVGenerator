@@ -33,7 +33,7 @@ class TextStyleDialog(QDialog):
         self.size_spin = QSpinBox()
         self.size_spin.setRange(6, 72)
         self.size_spin.setSuffix(" pt")
-        form.addRow("Schriftgroesse:", self.size_spin)
+        form.addRow("Schriftgröße:", self.size_spin)
 
         layout.addLayout(form)
 
@@ -71,7 +71,7 @@ class TextStyleDialog(QDialog):
         self.preview_label.setFont(QFont(family, size))
         self.preview_label.setText(
             f"Vorschau: {family}, {size}pt\n"
-            f"Boden loesen und seitlich lagern. Bodenklasse 3-5."
+            f"Boden lösen und seitlich lagern. Bodenklasse 3-5."
         )
 
     def _on_accept(self) -> None:

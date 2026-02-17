@@ -123,7 +123,7 @@ def validate_file(file_path: str) -> XSDValidationResult:
         result.is_valid = False
         result.errors.append(XSDValidationError(
             line=0,
-            message=f"Kein XSD-Schema fuer {phase.name} Version {version} verfuegbar"
+            message=f"Kein XSD-Schema für {phase.name} Version {version} verfügbar"
         ))
         return result
 

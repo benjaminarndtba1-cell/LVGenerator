@@ -53,7 +53,7 @@ class PreisSpiegelDialog(QDialog):
         top_layout.addWidget(self._file_list, stretch=1)
 
         btn_layout = QVBoxLayout()
-        self._btn_add = QPushButton("X84 hinzufuegen...")
+        self._btn_add = QPushButton("X84 hinzufügen...")
         self._btn_add.clicked.connect(self._on_add_files)
         btn_layout.addWidget(self._btn_add)
 
@@ -86,7 +86,7 @@ class PreisSpiegelDialog(QDialog):
         self._btn_export.clicked.connect(self._on_export)
         bottom_layout.addWidget(self._btn_export)
 
-        btn_close = QPushButton("Schliessen")
+        btn_close = QPushButton("Schließen")
         btn_close.clicked.connect(self.accept)
         bottom_layout.addWidget(btn_close)
 
@@ -95,7 +95,7 @@ class PreisSpiegelDialog(QDialog):
     def _on_add_files(self) -> None:
         file_filter = "GAEB X84-Dateien (*.x84);;Alle Dateien (*)"
         paths, _ = QFileDialog.getOpenFileNames(
-            self, "X84-Dateien auswaehlen", "", file_filter
+            self, "X84-Dateien auswählen", "", file_filter
         )
         for path in paths:
             if path not in self._file_paths:
@@ -119,7 +119,7 @@ class PreisSpiegelDialog(QDialog):
         if not self._file_paths:
             QMessageBox.information(
                 self, "Keine Dateien",
-                "Bitte mindestens eine X84-Datei hinzufuegen.",
+                "Bitte mindestens eine X84-Datei hinzufügen.",
             )
             return
 

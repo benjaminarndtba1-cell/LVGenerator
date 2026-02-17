@@ -58,13 +58,13 @@ class RichTextEditWidget(QWidget):
         self._btn_underline.setFont(font)
         toolbar.addWidget(self._btn_underline)
 
-        self._btn_bullet = self._make_toggle_button("\u2022", "Aufzaehlung")
+        self._btn_bullet = self._make_toggle_button("\u2022", "Aufzählung")
         toolbar.addWidget(self._btn_bullet)
 
-        self._btn_indent = self._make_button("\u2192", "Einruecken")
+        self._btn_indent = self._make_button("\u2192", "Einrücken")
         toolbar.addWidget(self._btn_indent)
 
-        self._btn_outdent = self._make_button("\u2190", "Ausruecken")
+        self._btn_outdent = self._make_button("\u2190", "Ausrücken")
         toolbar.addWidget(self._btn_outdent)
 
         toolbar.addStretch()

@@ -9,7 +9,7 @@ class EditCategoryPropertyCommand(BaseCommand):
 
     def __init__(self, category: BoQCategory, property_name: str,
                  old_value, new_value):
-        super().__init__(f"Kategorie-Eigenschaft '{property_name}' aendern")
+        super().__init__(f"Kategorie-Eigenschaft '{property_name}' ändern")
         self.category = category
         self.property_name = property_name
         self.old_value = old_value

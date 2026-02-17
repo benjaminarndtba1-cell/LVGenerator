@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from PySide6.QtCore import QRect, Qt
-from PySide6.QtGui import QAction, QColor, QIcon, QKeySequence, QPainter, QPen, QPixmap, QUndoStack
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QAction, QKeySequence
 from PySide6.QtWidgets import (
     QMainWindow,
     QSplitter,
@@ -14,6 +14,19 @@ from PySide6.QtWidgets import (
     QLabel,
 )
 
+from lvgenerator.resources.icons import (
+    icon_add_category,
+    icon_add_item,
+    icon_delete,
+    icon_duplicate,
+    icon_move_down,
+    icon_move_up,
+    icon_new,
+    icon_open,
+    icon_redo,
+    icon_save,
+    icon_undo,
+)
 from lvgenerator.views.category_editor import CategoryEditorWidget
 from lvgenerator.views.item_editor import ItemEditorWidget
 from lvgenerator.views.project_info_editor import ProjectInfoEditorWidget
@@ -33,24 +46,13 @@ class MainWindow(QMainWindow):
         self._setup_status_bar()
 
     def _setup_actions(self) -> None:
-        style = self.style()
-
-        self.action_new = QAction(
-            style.standardIcon(style.StandardPixmap.SP_FileIcon),
-            "&Neu", self,
-        )
+        self.action_new = QAction(icon_new(), "&Neu", self)
         self.action_new.setShortcut(QKeySequence.New)
 
-        self.action_open = QAction(
-            style.standardIcon(style.StandardPixmap.SP_DialogOpenButton),
-            "&Öffnen...", self,
-        )
+        self.action_open = QAction(icon_open(), "&Öffnen...", self)
         self.action_open.setShortcut(QKeySequence.Open)
 
-        self.action_save = QAction(
-            style.standardIcon(style.StandardPixmap.SP_DialogSaveButton),
-            "&Speichern", self,
-        )
+        self.action_save = QAction(icon_save(), "&Speichern", self)
         self.action_save.setShortcut(QKeySequence.Save)
 
         self.action_save_as = QAction("Speichern &unter...", self)
@@ -62,47 +64,30 @@ class MainWindow(QMainWindow):
         self.action_exit.setShortcut(QKeySequence.Quit)
         self.action_exit.triggered.connect(self.close)
 
-        self.action_undo = QAction(
-            self._make_undo_icon(),
-            "Rückgängig", self,
-        )
+        self.action_undo = QAction(icon_undo(), "Rückgängig", self)
         self.action_undo.setShortcut(QKeySequence.Undo)
         self.action_undo.setEnabled(False)
 
-        self.action_redo = QAction(
-            self._make_redo_icon(),
-            "Wiederholen", self,
-        )
+        self.action_redo = QAction(icon_redo(), "Wiederholen", self)
         self.action_redo.setShortcut(QKeySequence.Redo)
         self.action_redo.setEnabled(False)
 
         self.action_add_category = QAction(
-            style.standardIcon(style.StandardPixmap.SP_DirIcon),
-            "Kategorie hinzufügen", self,
+            icon_add_category(), "Kategorie hinzufügen", self,
         )
         self.action_add_item = QAction(
-            style.standardIcon(style.StandardPixmap.SP_FileDialogNewFolder),
-            "Position hinzufügen", self,
+            icon_add_item(), "Position hinzufügen", self,
         )
-        self.action_delete = QAction(
-            style.standardIcon(style.StandardPixmap.SP_TrashIcon),
-            "Löschen", self,
-        )
+        self.action_delete = QAction(icon_delete(), "Löschen", self)
         self.action_delete.setShortcut(QKeySequence.Delete)
 
-        self.action_move_up = QAction(
-            style.standardIcon(style.StandardPixmap.SP_ArrowUp),
-            "Nach oben", self,
-        )
+        self.action_move_up = QAction(icon_move_up(), "Nach oben", self)
         self.action_move_up.setShortcut(QKeySequence("Alt+Up"))
 
-        self.action_move_down = QAction(
-            style.standardIcon(style.StandardPixmap.SP_ArrowDown),
-            "Nach unten", self,
-        )
+        self.action_move_down = QAction(icon_move_down(), "Nach unten", self)
         self.action_move_down.setShortcut(QKeySequence("Alt+Down"))
 
-        self.action_duplicate = QAction("Duplizieren", self)
+        self.action_duplicate = QAction(icon_duplicate(), "Duplizieren", self)
         self.action_duplicate.setShortcut(QKeySequence("Ctrl+D"))
 
         self.action_convert_phase = QAction("Phase konvertieren...", self)
@@ -125,47 +110,6 @@ class MainWindow(QMainWindow):
         self.action_renumber_all = QAction(
             "Gesamtes LV neu nummerieren", self,
         )
-
-    def _make_undo_icon(self) -> QIcon:
-        pixmap = QPixmap(24, 24)
-        pixmap.fill(Qt.transparent)
-        p = QPainter(pixmap)
-        p.setRenderHint(QPainter.Antialiasing)
-        pen = QPen(QColor("#cccccc"), 2.0)
-        p.setPen(pen)
-        # Curved arrow pointing left (undo)
-        from PySide6.QtCore import QPointF
-        from PySide6.QtGui import QPainterPath
-        path = QPainterPath()
-        path.moveTo(18, 8)
-        path.cubicTo(18, 4, 6, 4, 6, 10)
-        path.lineTo(6, 16)
-        p.drawPath(path)
-        # Arrow head
-        p.drawLine(QPointF(6, 16), QPointF(10, 13))
-        p.drawLine(QPointF(6, 16), QPointF(3, 12))
-        p.end()
-        return QIcon(pixmap)
-
-    def _make_redo_icon(self) -> QIcon:
-        pixmap = QPixmap(24, 24)
-        pixmap.fill(Qt.transparent)
-        p = QPainter(pixmap)
-        p.setRenderHint(QPainter.Antialiasing)
-        pen = QPen(QColor("#cccccc"), 2.0)
-        p.setPen(pen)
-        from PySide6.QtCore import QPointF
-        from PySide6.QtGui import QPainterPath
-        path = QPainterPath()
-        path.moveTo(6, 8)
-        path.cubicTo(6, 4, 18, 4, 18, 10)
-        path.lineTo(18, 16)
-        p.drawPath(path)
-        # Arrow head
-        p.drawLine(QPointF(18, 16), QPointF(14, 13))
-        p.drawLine(QPointF(18, 16), QPointF(21, 12))
-        p.end()
-        return QIcon(pixmap)
 
     def _setup_menu_bar(self) -> None:
         menu_bar = self.menuBar()

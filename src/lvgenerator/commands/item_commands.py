@@ -11,7 +11,7 @@ class EditItemPropertyCommand(BaseCommand):
 
     def __init__(self, item: Item, property_name: str,
                  old_value, new_value, description: str = ""):
-        super().__init__(description or f"Eigenschaft '{property_name}' aendern")
+        super().__init__(description or f"Eigenschaft '{property_name}' ändern")
         self.item = item
         self.property_name = property_name
         self.old_value = old_value
@@ -43,7 +43,7 @@ class EditItemDescriptionCommand(BaseCommand):
 
     def __init__(self, description: ItemDescription, field_name: str,
                  old_value: str, new_value: str):
-        super().__init__(f"Beschreibung '{field_name}' aendern")
+        super().__init__(f"Beschreibung '{field_name}' ändern")
         self.description = description
         self.field_name = field_name
         self.old_value = old_value

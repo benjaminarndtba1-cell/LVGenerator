@@ -236,7 +236,7 @@ class ItemEditorWidget(QWidget):
 
         has_changes = False
         if self._undo_stack:
-            self._undo_stack.beginMacro("Kurztext aendern")
+            self._undo_stack.beginMacro("Kurztext ändern")
 
         if gaeb_html != desc.outline_html:
             self._push_desc_command("outline_html", desc.outline_html, gaeb_html)
@@ -260,7 +260,7 @@ class ItemEditorWidget(QWidget):
 
         has_changes = False
         if self._undo_stack:
-            self._undo_stack.beginMacro("Langtext aendern")
+            self._undo_stack.beginMacro("Langtext ändern")
 
         if gaeb_html != desc.detail_html:
             self._push_desc_command("detail_html", desc.detail_html, gaeb_html)

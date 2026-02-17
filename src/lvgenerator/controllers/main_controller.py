@@ -504,7 +504,7 @@ class MainController:
             QMessageBox.information(
                 self.window,
                 "Kein Projekt",
-                "Bitte zuerst ein Projekt oeffnen.",
+                "Bitte zuerst ein Projekt öffnen.",
             )
             return
         from lvgenerator.views.preisspiegel_dialog import PreisSpiegelDialog
