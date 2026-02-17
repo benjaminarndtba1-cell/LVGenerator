@@ -79,6 +79,7 @@ class MainController:
             self._on_global_constants
         )
         self.window.action_oz_mask.triggered.connect(self._on_oz_mask)
+        self.window.action_preisspiegel.triggered.connect(self._on_preisspiegel)
 
         # About
         self.window.action_about.triggered.connect(self._show_about)
@@ -445,6 +446,18 @@ class MainController:
 
         cmd = ChangeOZMaskCommand(self.project, old_breakdowns, new_breakdowns)
         self.execute_command(cmd)
+
+    def _on_preisspiegel(self) -> None:
+        if self.project is None or self.project.boq is None:
+            QMessageBox.information(
+                self.window,
+                "Kein Projekt",
+                "Bitte zuerst ein Projekt oeffnen.",
+            )
+            return
+        from lvgenerator.views.preisspiegel_dialog import PreisSpiegelDialog
+        dialog = PreisSpiegelDialog(self.project, self.window)
+        dialog.exec()
 
     def _show_about(self) -> None:
         QMessageBox.about(
